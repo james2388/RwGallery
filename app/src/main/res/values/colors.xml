@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<item name="theme_primary" type="color">#4CAF50</item>
+	<item name="theme_secondary" type="color">#388E3C</item>
+	<color name="theme_accent">#FF3D00</color>
+</resources>
