@@ -12,13 +12,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.ruswizards.rwgallery.R;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecyclerViewFragment extends android.support.v4.app.Fragment {
+public class RecyclerViewFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
 	private static final String LOG_TAG = "RecyclerView";
@@ -53,8 +54,15 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment {
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, getActivity());
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 
+		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);
+		imageView.setOnClickListener(this);
+
+		imageView = (ImageView)rootView.findViewById(R.id.switch_to_grid_image_view);
+		imageView.setOnClickListener(this);
+
 		return rootView;
 	}
+
 
 	private void initialiseDataSet() {
 		dataSet_ = new String[20];
@@ -93,6 +101,18 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment {
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putSerializable(STATE_LAYOUT_MANAGER_TYPE, layoutManagerType_);
 		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch (v.getId()){
+			case R.id.switch_to_linear_image_view:
+				setLayoutManager(LayoutManagerType.LINEAR_LAYOUT);
+				break;
+			case R.id.switch_to_grid_image_view:
+				setLayoutManager(LayoutManagerType.GRID_LAYOUT);
+				break;
+		}
 	}
 
 	public enum LayoutManagerType {

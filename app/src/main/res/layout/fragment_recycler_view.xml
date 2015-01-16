@@ -1,13 +1,35 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:id="@+id/root_view"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
 			 tools:context="com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment">
 
+	<ImageView
+		android:id="@+id/switch_to_linear_image_view"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:padding="12dp"
+		android:layout_alignParentTop="true"
+		android:layout_toStartOf="@+id/switch_to_grid_image_view"
+		android:layout_toLeftOf="@+id/switch_to_grid_image_view"
+		android:src="@drawable/ic_list_black"
+		android:clickable="true"/>
+
+	<ImageView
+		android:id="@+id/switch_to_grid_image_view"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:padding="12dp"
+		android:layout_alignParentTop="true"
+		android:layout_centerHorizontal="true"
+		android:src="@drawable/ic_view_grid"
+		android:clickable="true"/>
+
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view"
+		android:layout_below="@+id/switch_to_grid_image_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-</FrameLayout>
+</RelativeLayout>
