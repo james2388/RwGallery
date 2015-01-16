@@ -42,14 +42,57 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 	@Override
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
 		Log.d(LOG_TAG, "onBindViewHolder--");
-		ImageView previewImageView = viewHolder.getPreviewImageView();
+		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 		previewImageView.setImageResource(android.R.color.holo_green_light);
+
 		ProgressBar progressBar = viewHolder.getProgressBar();
 		progressBar.setVisibility(View.VISIBLE);
+
 		GalleryItem item = dataSet_.get(i);
 		viewHolder.getTitleTextView().setText(item.getTitle());
-		new ImageLoadAsyncTask(previewImageView, progressBar, context_).execute(item.getSource());
+//		new ImageLoadAsyncTask(previewImageView, progressBar, context_).execute(item.getSource());
+		loadBitmap(item.getSource(), previewImageView, progressBar);
 	}
+
+	private void loadBitmap(String source, PreviewImageView previewImageView, ProgressBar progressBar) {
+		if (cancelPotentiaWork(source, previewImageView)){
+			ImageLoadAsyncTask task = new ImageLoadAsyncTask(previewImageView, progressBar, context_);
+			previewImageView.setImageLoadAsyncTask(task);
+			task.execute(source);
+		}
+	}
+
+	private boolean cancelPotentiaWork(String source, PreviewImageView previewImageView) {
+		ImageLoadAsyncTask imageLoadAsyncTask = previewImageView.getImageLoadAsyncTask();
+		if (imageLoadAsyncTask != null){
+			if (!source.equals(imageLoadAsyncTask.getFilePath())){
+				imageLoadAsyncTask.cancel(true);
+			} else {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	/*private void loadBitmap(String source, ImageView previewImageView, ProgressBar progressBar, Context context_) {
+		if (cancelPotentiaWork(source, previewImageView)){
+			ImageLoadAsyncTask task = new ImageLoadAsyncTask(previewImageView, progressBar, context_);
+			AsyncDrawable asyncDrawable = new AsyncDrawable(context_.getResources(), source, task);
+			previewImageView.setImageDrawable(asyncDrawable);
+			task.execute(source);
+		}
+	}
+
+	private boolean cancelPotentiaWork(String source, ImageView previewImageView) {
+		ImageLoadAsyncTask imageLoadAsyncTask = getImageLoadAsyncTask(previewImageView);
+		if (ima)
+	}
+
+	private ImageLoadAsyncTask getImageLoadAsyncTask(ImageView previewImageView) {
+		if (previewImageView != null){
+
+		}
+	}*/
 
 	@Override
 	public int getItemCount() {
@@ -59,7 +102,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	public static class ViewHolder extends RecyclerView.ViewHolder{
 		private TextView titleTextView_;
-		private ImageView previewImageView_;
+		private PreviewImageView previewImageView_;
 		// TODO: later find out how to use ContentLoadingProgressBar
 		private ProgressBar progressBar_;
 		private static final String LOG_TAG = "CustomRecyclerViewAdapter.ViewHolder";
@@ -73,7 +116,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 				}
 			});
 			titleTextView_ = (TextView) itemView.findViewById(R.id.title_text_view);
-			previewImageView_ = (ImageView)itemView.findViewById(R.id.preview_image_view);
+			previewImageView_ = (PreviewImageView)itemView.findViewById(R.id.preview_image_view);
 			progressBar_ = (ProgressBar)itemView.findViewById(R.id.progress_bar);
 		}
 
@@ -81,7 +124,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			return titleTextView_;
 		}
 
-		public ImageView getPreviewImageView(){
+		public PreviewImageView getPreviewImageView(){
 			Log.d(LOG_TAG, "getPreviewImageView--");
 			return previewImageView_;
 		}

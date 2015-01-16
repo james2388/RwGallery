@@ -76,10 +76,6 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 
 
 	private void initialiseDataSet(String path) {
-		/*dataSet_ = new String[20];
-		for (int i = 0; i < 20; i++) {
-			dataSet_[i] = "Test item #" + i;
-		}*/
 		dataSet_ = new ArrayList<>();
 
 		File[] files  = new File(path).listFiles(new FileFilter() {

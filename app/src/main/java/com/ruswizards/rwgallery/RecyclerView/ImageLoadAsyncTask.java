@@ -24,13 +24,18 @@ import java.lang.ref.WeakReference;
 public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
 	private static final String LOG_TAG = "ImageLoadAsyncTask";
-	private WeakReference<ImageView> imageViewWeakReference_;
+	private WeakReference<PreviewImageView> imageViewWeakReference_;
 	private WeakReference<ProgressBar> progressBarWeakReference_;
+
+	public String getFilePath() {
+		return filePath_;
+	}
+
 	private String filePath_;
 	private Context context_;
 
-	public ImageLoadAsyncTask(ImageView imageView, ProgressBar progressBar, Context context){
-		imageViewWeakReference_ = new WeakReference<ImageView>(imageView);
+	public ImageLoadAsyncTask(PreviewImageView previewImageView, ProgressBar progressBar, Context context){
+		imageViewWeakReference_ = new WeakReference<PreviewImageView>(previewImageView);
 		progressBarWeakReference_ = new WeakReference<ProgressBar>(progressBar);
 		context_ = context;
 	}
@@ -50,7 +55,7 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 		if (imageViewWeakReference_ != null && bitmap != null){
 			ProgressBar progressBar = progressBarWeakReference_.get();
 			progressBar.setVisibility(View.INVISIBLE);
-			ImageView imageView = imageViewWeakReference_.get();
+			PreviewImageView imageView = imageViewWeakReference_.get();
 			if (imageView != null){
 				imageView.setImageBitmap(bitmap);
 				Log.d(LOG_TAG, "Setting bitmap--");
