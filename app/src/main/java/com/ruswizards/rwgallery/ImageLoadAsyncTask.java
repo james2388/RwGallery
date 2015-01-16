@@ -5,8 +5,11 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import java.lang.ref.WeakReference;
 
@@ -20,11 +23,13 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
 	private static final String LOG_TAG = "ImageLoadAsyncTask";
 	private WeakReference<ImageView> imageViewWeakReference_;
+	private WeakReference<ProgressBar> progressBarWeakReference_;
 	private String filePath_;
 	private Context context_;
 
-	public ImageLoadAsyncTask(ImageView imageView, Context context){
+	public ImageLoadAsyncTask(ImageView imageView, ProgressBar progressBar, Context context){
 		imageViewWeakReference_ = new WeakReference<ImageView>(imageView);
+		progressBarWeakReference_ = new WeakReference<ProgressBar>(progressBar);
 		context_ = context;
 	}
 
@@ -41,6 +46,8 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 	protected void onPostExecute(Bitmap bitmap) {
 		Log.d(LOG_TAG, "onPostExecute--");
 		if (imageViewWeakReference_ != null && bitmap != null){
+			ProgressBar progressBar = progressBarWeakReference_.get();
+			progressBar.setVisibility(View.INVISIBLE);
 			ImageView imageView = imageViewWeakReference_.get();
 			if (imageView != null){
 				imageView.setImageBitmap(bitmap);

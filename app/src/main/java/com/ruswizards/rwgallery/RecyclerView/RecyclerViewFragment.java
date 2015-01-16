@@ -5,6 +5,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,7 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
+
+import java.io.File;
+import java.io.FileFilter;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +30,7 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
 	private static final String LOG_TAG = "RecyclerView";
-	private String[] dataSet_;
+	private List<GalleryItem> dataSet_;
 	private RecyclerView recyclerView_;
 	private RecyclerView.LayoutManager layoutManager_;
 	private LayoutManagerType layoutManagerType_;
@@ -32,7 +39,11 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 
 	public RecyclerViewFragment() {
 		// Required empty public constructor
-		initialiseDataSet();
+		String defaultPath = Environment.
+				getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
+		// TODO: at the end remove fixed default pass
+		defaultPath = "/storage/sdcard1/DCIM/Camera";
+		initialiseDataSet(defaultPath);
 	}
 
 	@Override
@@ -64,11 +75,36 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 	}
 
 
-	private void initialiseDataSet() {
-		dataSet_ = new String[20];
+	private void initialiseDataSet(String path) {
+		/*dataSet_ = new String[20];
 		for (int i = 0; i < 20; i++) {
 			dataSet_[i] = "Test item #" + i;
+		}*/
+		dataSet_ = new ArrayList<>();
+
+		File[] files  = new File(path).listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				if (file.isDirectory()
+						| file.getAbsolutePath().endsWith(".jpg")
+						| file.getAbsolutePath().endsWith(".png")){
+					return true;
+				} else {
+					return false;
+				}
+			}
+		});
+
+		for (File file : files){
+			if (file.isDirectory()){
+				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.DIRECTORY));
+			} else {
+				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.LOCAL_ITEM));
+			}
 		}
+
+
+
 	}
 
 	public void setLayoutManager(LayoutManagerType layoutManagerType) {
