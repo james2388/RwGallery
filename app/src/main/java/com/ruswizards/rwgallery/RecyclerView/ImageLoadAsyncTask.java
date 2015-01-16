@@ -52,11 +52,14 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 	@Override
 	protected void onPostExecute(Bitmap bitmap) {
 		Log.d(LOG_TAG, "onPostExecute--");
+		if (isCancelled()){
+			bitmap = null;
+		}
 		if (imageViewWeakReference_ != null && bitmap != null){
 			ProgressBar progressBar = progressBarWeakReference_.get();
 			progressBar.setVisibility(View.INVISIBLE);
 			PreviewImageView imageView = imageViewWeakReference_.get();
-			if (imageView != null){
+			if (imageView != null && this == imageView.getImageLoadAsyncTask()){
 				imageView.setImageBitmap(bitmap);
 				Log.d(LOG_TAG, "Setting bitmap--");
 			}
