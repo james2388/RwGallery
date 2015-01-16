@@ -1,7 +1,6 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 import android.content.Context;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.ruswizards.rwgallery.GalleryItem;
-import com.ruswizards.rwgallery.ImageLoadAsyncTask;
 import com.ruswizards.rwgallery.R;
 
 import java.util.List;
@@ -62,6 +60,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 	public static class ViewHolder extends RecyclerView.ViewHolder{
 		private TextView titleTextView_;
 		private ImageView previewImageView_;
+		// TODO: later find out how to use ContentLoadingProgressBar
 		private ProgressBar progressBar_;
 		private static final String LOG_TAG = "CustomRecyclerViewAdapter.ViewHolder";
 
