@@ -1,6 +1,8 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
@@ -41,18 +43,15 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment {
 
 		// TODO: check if following could be deleted
 		layoutManager_ = new LinearLayoutManager(getActivity());
-		layoutManagerType_ = LayoutManagerType.LINEAR_LAYOUT;
+		layoutManagerType_ = LayoutManagerType.GRID_LAYOUT;
 
 		if (savedInstanceState != null) {
 			layoutManagerType_ = (LayoutManagerType) savedInstanceState.getSerializable(STATE_LAYOUT_MANAGER_TYPE);
 		}
 		setLayoutManager(layoutManagerType_);
 
-		// TODO: set adapter below
-		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_);
-		Log.d(LOG_TAG, "Before setting adapter");
+		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, getActivity());
 		recyclerView_.setAdapter(recyclerViewAdapter_);
-		Log.d(LOG_TAG, "Adapter set up");
 
 		return rootView;
 	}
@@ -88,7 +87,6 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment {
 
 		recyclerView_.setLayoutManager(layoutManager_);
 		recyclerView_.scrollToPosition(position);
-		Log.d(LOG_TAG, "LayoutManager set");
 	}
 
 	@Override

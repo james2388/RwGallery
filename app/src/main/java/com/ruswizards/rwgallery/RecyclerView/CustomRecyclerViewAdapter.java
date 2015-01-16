@@ -1,12 +1,16 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
+import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ruswizards.rwgallery.ImageLoadAsyncTask;
 import com.ruswizards.rwgallery.R;
 
 /**
@@ -19,9 +23,11 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	private static final String LOG_TAG = "CustomRecyclerViewAdapter";
 	private String[] dataSet_;
+	private Context context_;
 
-	public CustomRecyclerViewAdapter(String[] dataSet){
+	public CustomRecyclerViewAdapter(String[] dataSet, Context context){
 		dataSet_ = dataSet;
+		context_ = context;
 	}
 
 	@Override
@@ -33,8 +39,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	@Override
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
-		Log.d(LOG_TAG, "onBindViewHolder");
-		viewHolder.getTextView().setText(dataSet_[i]);
+		Log.d(LOG_TAG, "onBindViewHolder--");
+		viewHolder.getTitleTextView().setText(dataSet_[i]);
+		new ImageLoadAsyncTask(viewHolder.getPreviewImageView(), context_).execute("/storage/sdcard1/test.jpg");
 	}
 
 	@Override
@@ -44,7 +51,8 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 	}
 
 	public static class ViewHolder extends RecyclerView.ViewHolder{
-		private TextView textView_;
+		private TextView titleTextView_;
+		private ImageView previewImageView_;
 		private static final String LOG_TAG = "CustomRecyclerViewAdapter.ViewHolder";
 
 		public ViewHolder(View itemView) {
@@ -55,11 +63,17 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 					Log.d(LOG_TAG, "Clicked on: " + getPosition());
 				}
 			});
-			textView_ = (TextView) itemView.findViewById(R.id.text_view);
+			titleTextView_ = (TextView) itemView.findViewById(R.id.title_text_view);
+			previewImageView_ = (ImageView)itemView.findViewById(R.id.preview_image_view);
 		}
 
-		public TextView getTextView(){
-			return textView_;
+		public TextView getTitleTextView(){
+			return titleTextView_;
+		}
+
+		public ImageView getPreviewImageView(){
+			Log.d(LOG_TAG, "getPreviewImageView--");
+			return previewImageView_;
 		}
 	}
 
