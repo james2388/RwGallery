@@ -1,9 +1,12 @@
 package com.ruswizards.rwgallery;
 
+import android.app.FragmentTransaction;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -12,6 +15,13 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		if (savedInstanceState == null){
+			android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+			RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
+			fragmentTransaction.replace(R.id.content_fragment, recyclerViewFragment);
+			fragmentTransaction.commit();
+		}
 	}
 
 
