@@ -8,7 +8,7 @@ package com.ruswizards.rwgallery;
  */
 public class GalleryItem {
 	public enum ItemType{
-		WEB_ITEM, LOCAL_ITEM, DIRECTORY
+		WEB_ITEM, LOCAL_ITEM, DIRECTORY, PARENT
 	}
 
 	private String title_;

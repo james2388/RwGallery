@@ -49,7 +49,7 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 		if (isCancelled()){
 			bitmap = null;
 		}
-		if (imageViewWeakReference_ != null && bitmap != null){
+		if (imageViewWeakReference_.get() != null && bitmap != null){
 			ProgressBar progressBar = progressBarWeakReference_.get();
 			progressBar.setVisibility(View.INVISIBLE);
 			PreviewImageView imageView = imageViewWeakReference_.get();

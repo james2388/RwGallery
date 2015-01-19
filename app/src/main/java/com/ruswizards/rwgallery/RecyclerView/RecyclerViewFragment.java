@@ -1,8 +1,6 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 
-import android.content.Context;
-import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
@@ -13,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.ruswizards.rwgallery.GalleryItem;
@@ -42,9 +41,10 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		String defaultPath = Environment.
 				getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
 		// TODO: at the end remove fixed default pass
-		defaultPath = "/storage/sdcard1/DCIM/Camera";
+		//defaultPath = "/storage/sdcard1/DCIM/Camera";
+		dataSet_ = new ArrayList<>();
 		// Get data from start directory
-		initialiseDataSet(defaultPath);
+		fillDataSet(defaultPath);
 	}
 
 	@Override
@@ -64,7 +64,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}
 		setLayoutManager(layoutManagerType_);
 		// Fill in RecyclerView
-		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, getActivity());
+		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 
 		// Set listeners for icons to change LayoutManager type
@@ -76,11 +76,10 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		return rootView;
 	}
 
-
-	private void initialiseDataSet(String path) {
-		dataSet_ = new ArrayList<>();
-
+	public void fillDataSet(String path) {
+		dataSet_.clear();
 		// Get images and directories
+		File directory = new File(path);
 		File[] files  = new File(path).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
@@ -93,14 +92,26 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				}
 			}
 		});
-		// Copy selected files to a dataSet_
+		//Set first one item for navigating to parent directory
+		if (directory.getParent() != null) {
+			dataSet_.add(new GalleryItem(directory.getParentFile().getName(), directory.getParent(), GalleryItem.ItemType.PARENT));
+		}
+		if (files == null){
+			return;
+		}
+		// Copy selected files to a dataSet
 		for (File file : files){
-			if (file.isDirectory()){
+			if (file.isDirectory() && file.getAbsoluteFile().getAbsolutePath() != null){
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.DIRECTORY));
 			} else {
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.LOCAL_ITEM));
 			}
 		}
+	}
+
+	public void modifyDataSet(String path){
+		fillDataSet(path);
+		recyclerViewAdapter_.notifyDataSetChanged();
 	}
 
 	public void setLayoutManager(LayoutManagerType layoutManagerType) {
