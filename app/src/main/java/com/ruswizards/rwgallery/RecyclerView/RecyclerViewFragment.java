@@ -43,6 +43,7 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 				getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
 		// TODO: at the end remove fixed default pass
 		defaultPath = "/storage/sdcard1/DCIM/Camera";
+		// Get data from start directory
 		initialiseDataSet(defaultPath);
 	}
 
@@ -54,6 +55,7 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 		recyclerView_ = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
 		// TODO: check if following could be deleted
+		// Set LayoutManager
 		layoutManager_ = new LinearLayoutManager(getActivity());
 		layoutManagerType_ = LayoutManagerType.GRID_LAYOUT;
 
@@ -61,13 +63,13 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 			layoutManagerType_ = (LayoutManagerType) savedInstanceState.getSerializable(STATE_LAYOUT_MANAGER_TYPE);
 		}
 		setLayoutManager(layoutManagerType_);
-
+		// Fill in RecyclerView
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, getActivity());
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 
+		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);
 		imageView.setOnClickListener(this);
-
 		imageView = (ImageView)rootView.findViewById(R.id.switch_to_grid_image_view);
 		imageView.setOnClickListener(this);
 
@@ -78,6 +80,7 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 	private void initialiseDataSet(String path) {
 		dataSet_ = new ArrayList<>();
 
+		// Get images and directories
 		File[] files  = new File(path).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
@@ -90,7 +93,7 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 				}
 			}
 		});
-
+		// Copy selected files to a dataSet_
 		for (File file : files){
 			if (file.isDirectory()){
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.DIRECTORY));
@@ -98,9 +101,6 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.LOCAL_ITEM));
 			}
 		}
-
-
-
 	}
 
 	public void setLayoutManager(LayoutManagerType layoutManagerType) {
@@ -124,7 +124,6 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 				layoutManagerType_ = layoutManagerType;
 				break;
 		}
-
 		recyclerView_.setLayoutManager(layoutManager_);
 		recyclerView_.scrollToPosition(position);
 	}
@@ -150,5 +149,4 @@ public class RecyclerViewFragment extends android.support.v4.app.Fragment implem
 	public enum LayoutManagerType {
 		GRID_LAYOUT, LINEAR_LAYOUT
 	}
-
 }

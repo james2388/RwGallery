@@ -18,13 +18,13 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		if (savedInstanceState == null){
+			// Adding RecyclerView fragment
 			android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 			RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
 			fragmentTransaction.replace(R.id.content_fragment, recyclerViewFragment);
 			fragmentTransaction.commit();
 		}
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

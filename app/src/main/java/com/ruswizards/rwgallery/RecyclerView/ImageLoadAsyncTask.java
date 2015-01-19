@@ -27,10 +27,6 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 	private WeakReference<PreviewImageView> imageViewWeakReference_;
 	private WeakReference<ProgressBar> progressBarWeakReference_;
 
-	public String getFilePath() {
-		return filePath_;
-	}
-
 	private String filePath_;
 	private Context context_;
 
@@ -64,6 +60,10 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 				Log.d(LOG_TAG, "Setting bitmap--");
 			}
 		}
+	}
+
+	public String getFilePath() {
+		return filePath_;
 	}
 
 	private Bitmap decodeBitmapFromResource(String filePath, int requireWidth, int requiredHeight) {

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Copyright (C) 2014 Rus Wizards
  * <p/>
@@ -12,7 +14,7 @@ import android.widget.ImageView;
  */
 public class PreviewImageView extends ImageView {
 
-	private ImageLoadAsyncTask imageLoadAsyncTask_;
+	private WeakReference<ImageLoadAsyncTask> imageLoadAsyncTask_;
 
 	public PreviewImageView(Context context) {
 		super(context);
@@ -27,11 +29,10 @@ public class PreviewImageView extends ImageView {
 	}
 
 	public ImageLoadAsyncTask getImageLoadAsyncTask() {
-		return imageLoadAsyncTask_;
+		return imageLoadAsyncTask_.get();
 	}
 
-	public void setImageLoadAsyncTask(ImageLoadAsyncTask imageLoadAsyncTask) {
-		imageLoadAsyncTask_ = imageLoadAsyncTask;
+	public synchronized void setImageLoadAsyncTask(ImageLoadAsyncTask imageLoadAsyncTask) {
+		imageLoadAsyncTask_ = new WeakReference<ImageLoadAsyncTask>(imageLoadAsyncTask);
 	}
-
 }
