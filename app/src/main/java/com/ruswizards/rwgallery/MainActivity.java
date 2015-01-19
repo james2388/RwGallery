@@ -19,7 +19,7 @@ public class MainActivity extends ActionBarActivity {
 
 		if (savedInstanceState == null){
 			// Adding RecyclerView fragment
-			android.support.v4.app.FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+			FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
 			RecyclerViewFragment recyclerViewFragment = new RecyclerViewFragment();
 			fragmentTransaction.replace(R.id.content_fragment, recyclerViewFragment);
 			fragmentTransaction.commit();

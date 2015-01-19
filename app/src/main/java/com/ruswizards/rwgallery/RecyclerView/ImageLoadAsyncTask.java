@@ -1,14 +1,11 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.support.v4.widget.ContentLoadingProgressBar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.ruswizards.rwgallery.R;
@@ -26,28 +23,29 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 	private static final String LOG_TAG = "ImageLoadAsyncTask";
 	private WeakReference<PreviewImageView> imageViewWeakReference_;
 	private WeakReference<ProgressBar> progressBarWeakReference_;
+	private WeakReference<CustomRecyclerViewAdapter> adapterWeakReference_;
 
-	private String filePath_;
+	private String source_;
 	private Context context_;
 
-	public ImageLoadAsyncTask(PreviewImageView previewImageView, ProgressBar progressBar, Context context){
+	public ImageLoadAsyncTask(PreviewImageView previewImageView, ProgressBar progressBar, Context context, CustomRecyclerViewAdapter customRecyclerViewAdapter){
 		imageViewWeakReference_ = new WeakReference<PreviewImageView>(previewImageView);
 		progressBarWeakReference_ = new WeakReference<ProgressBar>(progressBar);
 		context_ = context;
+		adapterWeakReference_ = new WeakReference<CustomRecyclerViewAdapter>(customRecyclerViewAdapter);
 	}
 
 	@Override
 	protected Bitmap doInBackground(String... params) {
-		Log.d(LOG_TAG, "doInBackground--");
-		filePath_ = params[0];
+		source_ = params[0];
 		int width = (int) context_.getResources().getDimension(R.dimen.linear_layout_image_width);
 		int height = (int) context_.getResources().getDimension(R.dimen.linear_layout_image_height);
-		return decodeBitmapFromResource(filePath_, width, height);
+		Bitmap bitmap = decodeBitmapFromResource(source_, width, height);
+		return bitmap;
 	}
 
 	@Override
 	protected void onPostExecute(Bitmap bitmap) {
-		Log.d(LOG_TAG, "onPostExecute--");
 		if (isCancelled()){
 			bitmap = null;
 		}
@@ -57,13 +55,13 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 			PreviewImageView imageView = imageViewWeakReference_.get();
 			if (imageView != null && this == imageView.getImageLoadAsyncTask()){
 				imageView.setImageBitmap(bitmap);
-				Log.d(LOG_TAG, "Setting bitmap--");
 			}
+			adapterWeakReference_.get().addBitmapToLruCache(source_, bitmap);
 		}
 	}
 
 	public String getFilePath() {
-		return filePath_;
+		return source_;
 	}
 
 	private Bitmap decodeBitmapFromResource(String filePath, int requireWidth, int requiredHeight) {

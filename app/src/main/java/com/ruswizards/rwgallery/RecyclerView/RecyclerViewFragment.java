@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class RecyclerViewFragment extends android.support.v4.app.Fragment implements View.OnClickListener {
+public class RecyclerViewFragment extends Fragment implements View.OnClickListener {
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
 	private static final String LOG_TAG = "RecyclerView";

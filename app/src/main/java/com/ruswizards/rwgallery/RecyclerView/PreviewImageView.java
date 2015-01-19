@@ -2,6 +2,7 @@ package com.ruswizards.rwgallery.RecyclerView;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.widget.ImageView;
 
 import java.lang.ref.WeakReference;
@@ -29,7 +30,13 @@ public class PreviewImageView extends ImageView {
 	}
 
 	public ImageLoadAsyncTask getImageLoadAsyncTask() {
-		return imageLoadAsyncTask_.get();
+		ImageLoadAsyncTask imageLoadAsyncTask;
+		try {
+			imageLoadAsyncTask = imageLoadAsyncTask_.get();
+		} catch (NullPointerException e){
+			return null;
+		}
+		return imageLoadAsyncTask;
 	}
 
 	public synchronized void setImageLoadAsyncTask(ImageLoadAsyncTask imageLoadAsyncTask) {
