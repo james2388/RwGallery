@@ -38,8 +38,12 @@ public class ImageLoadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 	@Override
 	protected Bitmap doInBackground(String... params) {
 		source_ = params[0];
+		BitmapFactory.Options options = new BitmapFactory.Options();
+		options.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(source_, options);
 		int width = (int) context_.getResources().getDimension(R.dimen.linear_layout_image_width);
-		int height = (int) context_.getResources().getDimension(R.dimen.linear_layout_image_height);
+//		int height = (int) context_.getResources().getDimension(R.dimen.linear_layout_image_height);
+		int height = width * options.outHeight / options.outWidth;
 		Bitmap bitmap = decodeBitmapFromResource(source_, width, height);
 		return bitmap;
 	}

@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -72,6 +73,8 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		imageView.setOnClickListener(this);
 		imageView = (ImageView)rootView.findViewById(R.id.switch_to_grid_image_view);
 		imageView.setOnClickListener(this);
+		imageView = (ImageView)rootView.findViewById(R.id.switch_to_staggered_grid_image_view);
+		imageView.setOnClickListener(this);
 
 		return rootView;
 	}
@@ -101,7 +104,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}
 		// Copy selected files to a dataSet
 		for (File file : files){
-			if (file.isDirectory() && file.getAbsoluteFile().getAbsolutePath() != null){
+			if (file.isDirectory()){
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.DIRECTORY));
 			} else {
 				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.LOCAL_ITEM));
@@ -116,8 +119,12 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 
 	public void setLayoutManager(LayoutManagerType layoutManagerType) {
 		int position;
-		if (recyclerView_.getLayoutManager() != null){
-			position = ((LinearLayoutManager) recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+		if (recyclerView_.getLayoutManager() != null) {
+			if (!(recyclerView_.getLayoutManager() instanceof StaggeredGridLayoutManager)){
+				position = ((LinearLayoutManager) recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+			} else {
+				position = ((StaggeredGridLayoutManager) recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPositions(null)[0];
+			}
 		} else position = 0;
 
 		switch (layoutManagerType){
@@ -128,6 +135,12 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 			case GRID_LAYOUT:
 				// TODO: add span count change (do not forget to save state)
 				layoutManager_ = new GridLayoutManager(getActivity(), 3);
+				layoutManagerType_ = layoutManagerType;
+				break;
+			case STAGGERED_GRID_LAYOUT:
+				// TODO: add span count change (do not forget to save state)
+				layoutManager_ = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+				((StaggeredGridLayoutManager)layoutManager_).setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 				layoutManagerType_ = layoutManagerType;
 				break;
 			default:
@@ -154,10 +167,13 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 			case R.id.switch_to_grid_image_view:
 				setLayoutManager(LayoutManagerType.GRID_LAYOUT);
 				break;
+			case R.id.switch_to_staggered_grid_image_view:
+				setLayoutManager(LayoutManagerType.STAGGERED_GRID_LAYOUT);
+				break;
 		}
 	}
 
 	public enum LayoutManagerType {
-		GRID_LAYOUT, LINEAR_LAYOUT
+		GRID_LAYOUT, LINEAR_LAYOUT, STAGGERED_GRID_LAYOUT
 	}
 }

@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 /**
@@ -127,20 +129,22 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 		previewImageView.setImageResource(android.R.color.holo_green_light);
-
 		ProgressBar progressBar = viewHolder.getProgressBar();
-
+		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		GalleryItem item = dataSet_.get(i);
-		viewHolder.getTitleTextView().setText(item.getTitle());
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
 			cancelPotentialWork(item.getSource(), previewImageView);
 			previewImageView.setImageDrawable(recyclerView_.getActivity().getResources().getDrawable(android.R.drawable.stat_sys_upload));
 			progressBar.setVisibility(View.GONE);
+			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
+			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		} else if (item.getItemType() == GalleryItem.ItemType.DIRECTORY){
 			cancelPotentialWork(item.getSource(), previewImageView);
 			previewImageView.setImageDrawable(recyclerView_.getActivity().getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 			progressBar.setVisibility(View.GONE);
+			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
+			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		}
 		progressBar.setVisibility(View.VISIBLE);

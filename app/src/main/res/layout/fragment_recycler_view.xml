@@ -26,6 +26,17 @@
 		android:src="@drawable/ic_view_grid"
 		android:clickable="true"/>
 
+	<ImageView
+		android:id="@+id/switch_to_staggered_grid_image_view"
+		android:layout_width="48dp"
+		android:layout_height="48dp"
+		android:padding="12dp"
+		android:layout_alignParentTop="true"
+		android:layout_toRightOf="@+id/switch_to_grid_image_view"
+		android:layout_toEndOf="@+id/switch_to_grid_image_view"
+		android:src="@android:drawable/ic_dialog_dialer"
+		android:clickable="true"/>
+
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view"
 		android:layout_below="@+id/switch_to_grid_image_view"
