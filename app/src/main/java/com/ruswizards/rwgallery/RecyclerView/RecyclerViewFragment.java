@@ -30,6 +30,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
 	private static final String LOG_TAG = "RecyclerView";
+	private static final String STATE_LAST_PATH = "LastPath";
 	private List<GalleryItem> dataSet_;
 	private RecyclerView recyclerView_;
 	private RecyclerView.LayoutManager layoutManager_;
@@ -39,13 +40,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 
 	public RecyclerViewFragment() {
 		// Required empty public constructor
-		String defaultPath = Environment.
-				getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
-		// TODO: at the end remove fixed default pass
-		//defaultPath = "/storage/sdcard1/DCIM/Camera";
-		dataSet_ = new ArrayList<>();
-		// Get data from start directory
-		fillDataSet(defaultPath);
 	}
 
 	@Override
@@ -60,9 +54,20 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		layoutManager_ = new LinearLayoutManager(getActivity());
 		layoutManagerType_ = LayoutManagerType.GRID_LAYOUT;
 
+		String path;
+		// TODO: at the end remove fixed default pass
+		//defaultPath = "/storage/sdcard1/DCIM/Camera";
+
 		if (savedInstanceState != null) {
 			layoutManagerType_ = (LayoutManagerType) savedInstanceState.getSerializable(STATE_LAYOUT_MANAGER_TYPE);
+			path = savedInstanceState.getString(STATE_LAST_PATH);
+		} else {
+			path = Environment.
+					getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
 		}
+		// Get data from start directory
+		dataSet_ = new ArrayList<>();
+		fillDataSet(path);
 		setLayoutManager(layoutManagerType_);
 		// Fill in RecyclerView
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
@@ -97,7 +102,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		});
 		//Set first one item for navigating to parent directory
 		if (directory.getParent() != null) {
-			dataSet_.add(new GalleryItem(directory.getParentFile().getName(), directory.getParent(), GalleryItem.ItemType.PARENT));
+			dataSet_.add(new GalleryItem.Directory(directory.getParentFile().getName(), directory.getParent(), GalleryItem.ItemType.PARENT, directory.getAbsolutePath()));
 		}
 		if (files == null){
 			return;
@@ -155,6 +160,13 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		outState.putSerializable(STATE_LAYOUT_MANAGER_TYPE, layoutManagerType_);
+		String lastPath;
+		if (dataSet_.get(0) instanceof GalleryItem.Directory){
+			lastPath = ((GalleryItem.Directory) dataSet_.get(0)).getPath();
+		} else {
+			lastPath = "";
+		}
+		outState.putString(STATE_LAST_PATH, lastPath);
 		super.onSaveInstanceState(outState);
 	}
 

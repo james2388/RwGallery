@@ -44,4 +44,22 @@ public class GalleryItem {
 	public void setItemType(ItemType itemType_) {
 		this.itemType_ = itemType_;
 	}
+
+	public static class Directory extends GalleryItem{
+		private String path_;
+
+		public Directory(String title, String source, ItemType itemType, String path) {
+			super(title, source, itemType);
+			path_ = path;
+		}
+
+		public String getPath() {
+			return path_;
+		}
+
+		public void setPath(String path) {
+			path_ = path;
+		}
+
+	}
 }
