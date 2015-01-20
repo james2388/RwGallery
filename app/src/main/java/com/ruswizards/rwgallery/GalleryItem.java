@@ -1,10 +1,13 @@
-package com.ruswizards.rwgallery;
-
 /**
  * Copyright (C) 2014 Rus Wizards
  * <p/>
  * Created: 16.01.2015
  * Vladimir Farafonov
+ */
+package com.ruswizards.rwgallery;
+
+/**
+ * Class for item in a gallery
  */
 public class GalleryItem {
 	public enum ItemType{
@@ -45,10 +48,10 @@ public class GalleryItem {
 		this.itemType_ = itemType_;
 	}
 
-	public static class Directory extends GalleryItem{
+	public static class ParentDirectory extends GalleryItem{
 		private String path_;
 
-		public Directory(String title, String source, ItemType itemType, String path) {
+		public ParentDirectory(String title, String source, ItemType itemType, String path) {
 			super(title, source, itemType);
 			path_ = path;
 		}

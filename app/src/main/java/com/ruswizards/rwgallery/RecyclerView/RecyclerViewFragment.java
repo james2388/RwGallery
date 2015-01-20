@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 16.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.RecyclerView;
 
 
@@ -8,11 +14,9 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 
 import com.ruswizards.rwgallery.GalleryItem;
@@ -24,13 +28,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple {@link Fragment} subclass.
+ * Class for RecyclerView fragment
  */
 public class RecyclerViewFragment extends Fragment implements View.OnClickListener {
+	// TODO: delete LOG_TAG
+	private static final String LOG_TAG = "RecyclerView";
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
-	private static final String LOG_TAG = "RecyclerView";
 	private static final String STATE_LAST_PATH = "LastPath";
+
 	private List<GalleryItem> dataSet_;
 	private RecyclerView recyclerView_;
 	private RecyclerView.LayoutManager layoutManager_;
@@ -48,28 +54,27 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		// Inflates the layout
 		View rootView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 		recyclerView_ = (RecyclerView) rootView.findViewById(R.id.recycler_view);
-
 		// TODO: check if following could be deleted
 		// Set LayoutManager
 		layoutManager_ = new LinearLayoutManager(getActivity());
 		layoutManagerType_ = LayoutManagerType.GRID_LAYOUT;
-
+		// Retain saved state
 		String path;
-		// TODO: at the end remove fixed default pass
-		//defaultPath = "/storage/sdcard1/DCIM/Camera";
-
 		if (savedInstanceState != null) {
-			layoutManagerType_ = (LayoutManagerType) savedInstanceState.getSerializable(STATE_LAYOUT_MANAGER_TYPE);
+			layoutManagerType_ = (LayoutManagerType) savedInstanceState.getSerializable(
+					STATE_LAYOUT_MANAGER_TYPE);
 			path = savedInstanceState.getString(STATE_LAST_PATH);
 		} else {
+			// Set path to system default directory
 			path = Environment.
 					getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).getAbsolutePath();
 		}
 		// Get data from start directory
 		dataSet_ = new ArrayList<>();
 		fillDataSet(path);
-		setLayoutManager(layoutManagerType_);
+
 		// Fill in RecyclerView
+		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 
@@ -84,6 +89,11 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		return rootView;
 	}
 
+	/**
+	 * Get data from directory and saves it to data set
+	 *
+	 * @param path Source directory path
+	 */
 	public void fillDataSet(String path) {
 		dataSet_.clear();
 		// Get images and directories
@@ -91,47 +101,67 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		File[] files  = new File(path).listFiles(new FileFilter() {
 			@Override
 			public boolean accept(File file) {
-				if (file.isDirectory()
+				return file.isDirectory()
 						| file.getAbsolutePath().endsWith(".jpg")
-						| file.getAbsolutePath().endsWith(".png")){
-					return true;
-				} else {
-					return false;
-				}
+						| file.getAbsolutePath().endsWith(".png");
 			}
 		});
-		//Set first one item for navigating to parent directory
+		//Set first dataSet_ item for navigating to parent directory
 		if (directory.getParent() != null) {
-			dataSet_.add(new GalleryItem.Directory(directory.getParentFile().getName(), directory.getParent(), GalleryItem.ItemType.PARENT, directory.getAbsolutePath()));
+			dataSet_.add(new GalleryItem.ParentDirectory(
+					directory.getParentFile().getName(),
+					directory.getParent(),
+					GalleryItem.ItemType.PARENT,
+					directory.getAbsolutePath())
+			);
 		}
 		if (files == null){
 			return;
 		}
-		// Copy selected files to a dataSet
+		// Copy selected files to dataSet_
 		for (File file : files){
 			if (file.isDirectory()){
-				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.DIRECTORY));
+				dataSet_.add(new GalleryItem(
+						file.getName(),
+						file.getAbsolutePath(),
+						GalleryItem.ItemType.DIRECTORY)
+				);
 			} else {
-				dataSet_.add(new GalleryItem(file.getName(), file.getAbsolutePath(), GalleryItem.ItemType.LOCAL_ITEM));
+				dataSet_.add(new GalleryItem(
+						file.getName(),
+						file.getAbsolutePath(),
+						GalleryItem.ItemType.LOCAL_ITEM)
+				);
 			}
 		}
 	}
 
+	/**
+	 * Updates data set and notifies adapter
+	 *
+	 * @param path Source directory path
+	 */
 	public void modifyDataSet(String path){
 		fillDataSet(path);
 		recyclerViewAdapter_.notifyDataSetChanged();
 	}
 
+	/**
+	 * Sets new LayoutManager type and applies changes
+	 */
 	public void setLayoutManager(LayoutManagerType layoutManagerType) {
 		int position;
+		// Get current scroll position or set it to 0
 		if (recyclerView_.getLayoutManager() != null) {
 			if (!(recyclerView_.getLayoutManager() instanceof StaggeredGridLayoutManager)){
-				position = ((LinearLayoutManager) recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
+				position = ((LinearLayoutManager)
+						recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPosition();
 			} else {
-				position = ((StaggeredGridLayoutManager) recyclerView_.getLayoutManager()).findFirstCompletelyVisibleItemPositions(null)[0];
+				position = ((StaggeredGridLayoutManager) recyclerView_.getLayoutManager()).
+						findFirstCompletelyVisibleItemPositions(null)[0];
 			}
 		} else position = 0;
-
+		// Set up layout manager
 		switch (layoutManagerType){
 			case LINEAR_LAYOUT:
 				layoutManager_ = new LinearLayoutManager(getActivity());
@@ -144,8 +174,10 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				break;
 			case STAGGERED_GRID_LAYOUT:
 				// TODO: add span count change (do not forget to save state)
-				layoutManager_ = new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
-				((StaggeredGridLayoutManager)layoutManager_).setGapStrategy(StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
+				layoutManager_ =
+						new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+				((StaggeredGridLayoutManager)layoutManager_).setGapStrategy(
+						StaggeredGridLayoutManager.GAP_HANDLING_MOVE_ITEMS_BETWEEN_SPANS);
 				layoutManagerType_ = layoutManagerType;
 				break;
 			default:
@@ -153,18 +185,21 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				layoutManagerType_ = layoutManagerType;
 				break;
 		}
+		// Apply changes
 		recyclerView_.setLayoutManager(layoutManager_);
 		recyclerView_.scrollToPosition(position);
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
+		// Save LayoutManager type
 		outState.putSerializable(STATE_LAYOUT_MANAGER_TYPE, layoutManagerType_);
+		// Save current directory path
 		String lastPath;
-		if (dataSet_.get(0) instanceof GalleryItem.Directory){
-			lastPath = ((GalleryItem.Directory) dataSet_.get(0)).getPath();
+		if (dataSet_.get(0) != null && dataSet_.get(0) instanceof GalleryItem.ParentDirectory){
+			lastPath = ((GalleryItem.ParentDirectory) dataSet_.get(0)).getPath();
 		} else {
-			lastPath = "";
+			lastPath = "/";											// Upper level of navigation
 		}
 		outState.putString(STATE_LAST_PATH, lastPath);
 		super.onSaveInstanceState(outState);

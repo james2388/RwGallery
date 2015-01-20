@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 16.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery;
 
 import android.app.FragmentTransaction;
@@ -9,7 +15,9 @@ import android.widget.ImageView;
 
 import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
 
-
+/**
+ * Main activity of the app
+ */
 public class MainActivity extends ActionBarActivity {
 
 	@Override
@@ -39,12 +47,10 @@ public class MainActivity extends ActionBarActivity {
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
 		int id = item.getItemId();
-
 		//noinspection SimplifiableIfStatement
 		if (id == R.id.action_settings) {
 			return true;
 		}
-
 		return super.onOptionsItemSelected(item);
 	}
 }

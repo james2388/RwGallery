@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 16.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.RecyclerView;
 
 import android.app.FragmentManager;
@@ -20,16 +26,14 @@ import org.w3c.dom.Text;
 import java.util.List;
 
 /**
- * Copyright (C) 2014 Rus Wizards
- * <p/>
- * Created: 16.01.2015
- * Vladimir Farafonov
+ * Adapter for RecyclerView class
  */
 public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecyclerViewAdapter.ViewHolder> {
+	// TODO: delete LOG_TAG
+	private static final String LOG_TAG = "CustomRecyclerViewAdapter";
 
 	private final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
 
-	private static final String LOG_TAG = "CustomRecyclerViewAdapter";
 	private List<GalleryItem> dataSet_;
 	private LruCache<String, Bitmap> bitmapLruCache_;
 	private RecyclerViewFragment recyclerView_;
@@ -41,12 +45,16 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	@Override
 	public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-		View newView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.recycler_view_item, viewGroup, false);
-		RetainFragment retainFragment = RetainFragment.getInstance(recyclerView_.getActivity().getFragmentManager());
+		View newView = LayoutInflater.from(viewGroup.getContext()).
+				inflate(R.layout.recycler_view_item, viewGroup, false);
+		// Get retained cache
+		RetainFragment retainFragment =
+				RetainFragment.getInstance(recyclerView_.getActivity().getFragmentManager());
 		bitmapLruCache_ = retainFragment.getRetainedCache();
 		if (bitmapLruCache_ == null){
 			// Get memory for LruCache
-			final int cacheSize = (int)(Runtime.getRuntime().maxMemory() / 1024 * CACHE_MAX_MEMORY_PERCENTAGE);
+			final int cacheSize =
+					(int)(Runtime.getRuntime().maxMemory() / 1024 * CACHE_MAX_MEMORY_PERCENTAGE);
 			// Initialize LruCache
 			bitmapLruCache_ = new LruCache<String, Bitmap>(cacheSize){
 				@Override
@@ -56,19 +64,21 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			};
 			retainFragment.setRetainedCache(bitmapLruCache_);
 		}
-
+		// Return ViewHolder with set up item click listener
 		return new ViewHolder(newView, new ViewHolder.ViewHolderClicksInterface() {
 			@Override
 			public void itemClicked(int position) {
 				GalleryItem item = dataSet_.get(position);
 				switch (item.getItemType()){
 					case PARENT:
+						// Navigate up
 						recyclerView_.modifyDataSet(item.getSource());
 						break;
 					case LOCAL_ITEM:
 						Log.d(LOG_TAG, "Clicked local");
 						break;
 					case DIRECTORY:
+						// Navigate to selected directory
 						recyclerView_.modifyDataSet(item.getSource());
 						break;
 				}
@@ -76,6 +86,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		});
 	}
 
+	/**
+	 * Fragment for retaining cache on config changes
+	 */
 	public static class RetainFragment extends android.app.Fragment{
 		private final static String TAG = "RetainFragment";
 
@@ -89,6 +102,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			setRetainInstance(true);
 		}
 
+		/**
+		 * Returns instance of RetainFragment
+		 */
 		public static RetainFragment getInstance (FragmentManager fragmentManager){
 			RetainFragment retainFragment = (RetainFragment)fragmentManager.findFragmentByTag(TAG);
 			if (retainFragment == null){
@@ -105,10 +121,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		public void setRetainedCache(LruCache<String, Bitmap> retainedCache) {
 			retainedCache_ = retainedCache;
 		}
-
 	}
 
 
+	/**
+	 * Adds bitmap to cache with specified key
+	 */
 	public void addBitmapToLruCache(String key, Bitmap bitmap){
 		synchronized (bitmapLruCache_) {
 			if (getBitmapFromCache(key) == null){
@@ -117,6 +135,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		}
 	}
 
+	/**
+	 * Gets bitmap with specified key from cache
+	 */
 	private Bitmap getBitmapFromCache(String key) {
 		Bitmap resultBitmap;
 		synchronized (bitmapLruCache_){
@@ -127,44 +148,64 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	@Override
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
+		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 		previewImageView.setImageResource(android.R.color.holo_green_light);
 		ProgressBar progressBar = viewHolder.getProgressBar();
 		viewHolder.getTitleTextView().setVisibility(View.GONE);
+		// Fill views
 		GalleryItem item = dataSet_.get(i);
+		cancelPotentialWork(item.getSource(), previewImageView);
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
+			// Cancel task linked to previewImageView
 			cancelPotentialWork(item.getSource(), previewImageView);
-			previewImageView.setImageDrawable(recyclerView_.getActivity().getResources().getDrawable(android.R.drawable.stat_sys_upload));
+			// Fill views
+			previewImageView.setImageDrawable(recyclerView_.getActivity().
+					getResources().getDrawable(android.R.drawable.stat_sys_upload));
 			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		} else if (item.getItemType() == GalleryItem.ItemType.DIRECTORY){
+			// Cancel task linked to previewImageView
 			cancelPotentialWork(item.getSource(), previewImageView);
-			previewImageView.setImageDrawable(recyclerView_.getActivity().getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
+			// Fill views
+			previewImageView.setImageDrawable(recyclerView_.getActivity().
+					getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		}
 		progressBar.setVisibility(View.VISIBLE);
-//		new ImageLoadAsyncTask(previewImageView, progressBar, context_).execute(item.getSource());
 		loadBitmap(item.getSource(), previewImageView, progressBar);
 	}
 
-	private void loadBitmap(String source, PreviewImageView previewImageView, ProgressBar progressBar) {
+	/**
+	 * Loads bitmap from given source
+	 */
+	private void loadBitmap(
+			String source, PreviewImageView previewImageView, ProgressBar progressBar) {
 		boolean isCancelled = cancelPotentialWork(source, previewImageView);
+		// First tries to get bitmap from a cache. If item is not in a cache, starts new task
 		final Bitmap bitmap = getBitmapFromCache(source);
 		if (bitmap != null) {
 			progressBar.setVisibility(View.INVISIBLE);
 			previewImageView.setImageBitmap(bitmap);
 		} else if (!isCancelled){
-			ImageLoadAsyncTask task = new ImageLoadAsyncTask(previewImageView, progressBar, recyclerView_.getActivity(), this);
+			ImageLoadAsyncTask task = new ImageLoadAsyncTask(
+					previewImageView, progressBar, recyclerView_.getActivity(), this);
 			previewImageView.setImageLoadAsyncTask(task);
 			task.execute(source);
 		}
 	}
 
+	/**
+	 * Checks if potential task should be cancelled (it is already linked to this view) and cancels
+	 * already running task linked to view.
+	 *
+	 * @return True if task should be cancelled, false otherwise
+	 */
 	private boolean cancelPotentialWork(String source, PreviewImageView previewImageView) {
 		ImageLoadAsyncTask imageLoadAsyncTask = previewImageView.getImageLoadAsyncTask();
 		if (imageLoadAsyncTask != null){
@@ -182,12 +223,17 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		return dataSet_.size();
 	}
 
+	/**
+	 *  Class for view holder
+	 */
 	public static class ViewHolder extends RecyclerView.ViewHolder {
+		// TODO: delete LOG_TAG
+		private static final String LOG_TAG = "CustomRecyclerViewAdapter.ViewHolder";
+
 		private TextView titleTextView_;
 		private PreviewImageView previewImageView_;
 		// TODO: later find out how to use ContentLoadingProgressBar
 		private ProgressBar progressBar_;
-		private static final String LOG_TAG = "CustomRecyclerViewAdapter.ViewHolder";
 
 		public ViewHolder(final View itemView, final ViewHolderClicksInterface clickListener) {
 			super(itemView);
@@ -203,6 +249,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			progressBar_ = (ProgressBar)itemView.findViewById(R.id.progress_bar);
 		}
 
+		/**
+		 * Interface to handle item clicks
+		 */
 		public interface ViewHolderClicksInterface{
 			public void itemClicked(int position);
 			// TODO: add here handle click on selection checkbox;
