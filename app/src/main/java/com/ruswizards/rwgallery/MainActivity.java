@@ -7,6 +7,7 @@
 package com.ruswizards.rwgallery;
 
 import android.app.FragmentTransaction;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.RoundedVignetteBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
 
@@ -42,26 +46,28 @@ public class MainActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_main);
 
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-				.cacheInMemory(false)
-				.cacheOnDisk(false)
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+				.considerExifParams(true)
 				.showImageOnLoading(android.R.drawable.ic_menu_crop)
 						.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.resetViewBeforeLoading(true)
-				//.displayer(new FadeInBitmapDisplayer(1000))
+				.displayer(new SimpleBitmapDisplayer())
+				.bitmapConfig(Bitmap.Config.RGB_565)
 				.build();
 		File cacheDir = StorageUtils.getCacheDirectory(this);
 
 		Point size = new Point();
 		getWindowManager().getDefaultDisplay().getSize(size);
 		int width = size.x / 3;
-		int height = width * 8;
+		int height = size.y / 3 * 2;
 
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
 					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
 					.memoryCacheExtraOptions(width, height)
-					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 25))
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 45))
 					.diskCacheExtraOptions(width, height, null)
 					.writeDebugLogs()
 					.defaultDisplayImageOptions(defaultOptions)
