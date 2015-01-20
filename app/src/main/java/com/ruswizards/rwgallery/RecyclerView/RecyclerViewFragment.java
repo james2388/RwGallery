@@ -220,6 +220,10 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}
 	}
 
+	public RecyclerView.LayoutManager getLayoutManager (){
+		return layoutManager_;
+	}
+
 	public enum LayoutManagerType {
 		GRID_LAYOUT, LINEAR_LAYOUT, STAGGERED_GRID_LAYOUT
 	}

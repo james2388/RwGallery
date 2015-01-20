@@ -7,23 +7,69 @@
 package com.ruswizards.rwgallery;
 
 import android.app.FragmentTransaction;
+import android.graphics.Point;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * Main activity of the app
  */
 public class MainActivity extends ActionBarActivity {
+	private final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				.cacheInMemory(false)
+				.cacheOnDisk(false)
+				.showImageOnLoading(android.R.drawable.ic_menu_crop)
+						.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+				.resetViewBeforeLoading(true)
+				//.displayer(new FadeInBitmapDisplayer(1000))
+				.build();
+		File cacheDir = StorageUtils.getCacheDirectory(this);
+
+		Point size = new Point();
+		getWindowManager().getDefaultDisplay().getSize(size);
+		int width = size.x / 3;
+		int height = width * 8;
+
+		ImageLoaderConfiguration configuration = null;
+		try {
+			configuration = new ImageLoaderConfiguration.Builder(this)
+					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCacheExtraOptions(width, height)
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 25))
+					.diskCacheExtraOptions(width, height, null)
+					.writeDebugLogs()
+					.defaultDisplayImageOptions(defaultOptions)
+					.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ImageLoader.getInstance().init(configuration);
 
 		if (savedInstanceState == null){
 			// Adding RecyclerView fragment

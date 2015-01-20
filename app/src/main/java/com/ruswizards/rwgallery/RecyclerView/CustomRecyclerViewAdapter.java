@@ -8,6 +8,7 @@ package com.ruswizards.rwgallery.RecyclerView;
 
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 
@@ -151,34 +153,37 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 		previewImageView.setImageResource(android.R.color.holo_green_light);
-		ProgressBar progressBar = viewHolder.getProgressBar();
+//		ProgressBar progressBar = viewHolder.getProgressBar();
 		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
-		cancelPotentialWork(item.getSource(), previewImageView);
+//		cancelPotentialWork(item.getSource(), previewImageView);
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
 			// Cancel task linked to previewImageView
-			cancelPotentialWork(item.getSource(), previewImageView);
+//			cancelPotentialWork(item.getSource(), previewImageView);
 			// Fill views
+			previewImageView.setImageBitmap(null);
 			previewImageView.setImageDrawable(recyclerView_.getActivity().
 					getResources().getDrawable(android.R.drawable.stat_sys_upload));
-			progressBar.setVisibility(View.GONE);
+//			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		} else if (item.getItemType() == GalleryItem.ItemType.DIRECTORY){
 			// Cancel task linked to previewImageView
-			cancelPotentialWork(item.getSource(), previewImageView);
+//			cancelPotentialWork(item.getSource(), previewImageView);
 			// Fill views
 			previewImageView.setImageDrawable(recyclerView_.getActivity().
 					getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
-			progressBar.setVisibility(View.GONE);
+//			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		}
-		progressBar.setVisibility(View.VISIBLE);
-		loadBitmap(item.getSource(), previewImageView, progressBar);
+//		progressBar.setVisibility(View.VISIBLE);
+//		loadBitmap(item.getSource(), previewImageView, progressBar);
+		int width = recyclerView_.getLayoutManager().getWidth();
+		ImageLoader.getInstance().displayImage("file://" + item.getSource(), previewImageView);
 	}
 
 	/**
@@ -246,7 +251,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			});
 			titleTextView_ = (TextView) itemView.findViewById(R.id.title_text_view);
 			previewImageView_ = (PreviewImageView)itemView.findViewById(R.id.preview_image_view);
-			progressBar_ = (ProgressBar)itemView.findViewById(R.id.progress_bar);
+//			progressBar_ = (ProgressBar)itemView.findViewById(R.id.progress_bar);
 		}
 
 		/**
