@@ -68,7 +68,7 @@ public class MainActivity extends ActionBarActivity {
 					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
 					.memoryCacheExtraOptions(width, height)
 					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 45))
-					.diskCacheExtraOptions(width, height, null)
+//					.diskCacheExtraOptions(width, height, null)
 					.writeDebugLogs()
 					.defaultDisplayImageOptions(defaultOptions)
 					.build();
