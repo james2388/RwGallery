@@ -38,13 +38,10 @@ import java.io.IOException;
  * Main activity of the app
  */
 public class MainActivity extends ActionBarActivity {
-	private final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
-
+	// TODO: add min height to previewImageView
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
-
+	protected void onResume() {
+		super.onResume();
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
 				.cacheInMemory(true)
 				.cacheOnDisk(true)
@@ -76,6 +73,46 @@ public class MainActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		ImageLoader.getInstance().init(configuration);
+	}
+
+	public final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+
+		/*DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+				.considerExifParams(true)
+//				.showImageOnLoading(android.R.drawable.ic_menu_crop)
+				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+				.resetViewBeforeLoading(true)
+				.displayer(new FadeInBitmapDisplayer(200))
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.build();
+		File cacheDir = StorageUtils.getCacheDirectory(this);
+
+		Point size = new Point();
+		getWindowManager().getDefaultDisplay().getSize(size);
+		int width = size.x / 3;
+		int height = size.y / 3 * 2;
+
+		ImageLoaderConfiguration configuration = null;
+		try {
+			configuration = new ImageLoaderConfiguration.Builder(this)
+					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCacheExtraOptions(width, height)
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 45))
+//					.diskCacheExtraOptions(width, height, null)
+					.writeDebugLogs()
+					.defaultDisplayImageOptions(defaultOptions)
+					.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ImageLoader.getInstance().init(configuration);*/
 
 		if (savedInstanceState == null){
 			// Adding RecyclerView fragment

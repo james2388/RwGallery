@@ -73,7 +73,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}
 		// Get data from start directory
 		dataSet_ = new ArrayList<>();
-		fillDataSet(path);
+		fillDataSet(path, dataSet_, true);
 
 		// Fill in RecyclerView
 		setLayoutManager(layoutManagerType_);
@@ -96,7 +96,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 	 *
 	 * @param path Source directory path
 	 */
-	public void fillDataSet(String path) {
+	/*public void fillDataSet(String path) {
 		dataSet_.clear();
 		// Get images and directories
 		File directory = new File(path);
@@ -136,6 +136,48 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				);
 			}
 		}
+	}*/
+
+	public static void fillDataSet(String path, List<GalleryItem> dataSet, boolean includeDirectories) {
+		dataSet.clear();
+		// Get images and directories
+		File directory = new File(path);
+		File[] files  = new File(path).listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return file.isDirectory()
+						| file.getAbsolutePath().endsWith(".jpg")
+						| file.getAbsolutePath().endsWith(".png");
+			}
+		});
+		//Set first dataSet_ item for navigating to parent directory
+		if (directory.getParent() != null && includeDirectories) {
+			dataSet.add(new GalleryItem.ParentDirectory(
+							directory.getParentFile().getName(),
+							directory.getParent(),
+							GalleryItem.ItemType.PARENT,
+							directory.getAbsolutePath())
+			);
+		}
+		if (files == null){
+			return;
+		}
+		// Copy selected files to dataSet_
+		for (File file : files){
+			if (file.isDirectory() && includeDirectories){
+				dataSet.add(new GalleryItem(
+								file.getName(),
+								file.getAbsolutePath(),
+								GalleryItem.ItemType.DIRECTORY)
+				);
+			} else {
+				dataSet.add(new GalleryItem(
+								file.getName(),
+								file.getAbsolutePath(),
+								GalleryItem.ItemType.LOCAL_ITEM)
+				);
+			}
+		}
 	}
 
 	/**
@@ -144,7 +186,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 	 * @param path Source directory path
 	 */
 	public void modifyDataSet(String path){
-		fillDataSet(path);
+		fillDataSet(path, dataSet_, true);
 		recyclerViewAdapter_.notifyDataSetChanged();
 	}
 

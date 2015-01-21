@@ -7,6 +7,7 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
@@ -21,7 +22,9 @@ import android.widget.TextView;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
+import com.ruswizards.rwgallery.ViewPager.ImagePagerActivity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -75,6 +78,23 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						break;
 					case LOCAL_ITEM:
 						Log.d(LOG_TAG, "Clicked local");
+						ImageLoader.getInstance().destroy();
+						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagePagerActivity.class);
+						int directories = 0;
+						for (int j = 0; j < dataSet_.size(); j++) {
+							if (dataSet_.get(j).getItemType() == GalleryItem.ItemType.PARENT || dataSet_.get(j).getItemType() == GalleryItem.ItemType.DIRECTORY){
+								directories++;
+							}
+						}
+						openImageIntent.putExtra(ImagePagerActivity.EXTRA_ITEM_NUMBER, position - directories);
+						String sourceDirectory;
+						if (dataSet_.get(0) instanceof GalleryItem.ParentDirectory){
+							sourceDirectory = ((GalleryItem.ParentDirectory)dataSet_.get(0)).getPath();
+						} else {
+							sourceDirectory = "/";
+						}
+						openImageIntent.putExtra(ImagePagerActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
+						recyclerViewFragment_.getActivity().startActivity(openImageIntent);
 						break;
 					case DIRECTORY:
 						// Navigate to selected directory
