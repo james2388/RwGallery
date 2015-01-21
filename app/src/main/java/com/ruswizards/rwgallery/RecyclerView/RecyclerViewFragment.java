@@ -14,8 +14,10 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
@@ -77,6 +79,8 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
+		/*int slop = ViewConfiguration.get(getActivity()).getScaledTouchSlop();
+		recyclerView_.addOnItemTouchListener(new TouchListener());*/
 
 		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);

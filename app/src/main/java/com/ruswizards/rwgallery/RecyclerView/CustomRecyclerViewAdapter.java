@@ -8,7 +8,6 @@ package com.ruswizards.rwgallery.RecyclerView;
 
 import android.app.FragmentManager;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -23,8 +22,6 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 
-import org.w3c.dom.Text;
-
 import java.util.List;
 
 /**
@@ -38,11 +35,11 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	private List<GalleryItem> dataSet_;
 	private LruCache<String, Bitmap> bitmapLruCache_;
-	private RecyclerViewFragment recyclerView_;
+	private RecyclerViewFragment recyclerViewFragment_;
 
-	public CustomRecyclerViewAdapter(List<GalleryItem> dataSet, RecyclerViewFragment recyclerView){
+	public CustomRecyclerViewAdapter(List<GalleryItem> dataSet, RecyclerViewFragment recyclerViewFragment){
 		dataSet_ = dataSet;
-		recyclerView_ = recyclerView;
+		recyclerViewFragment_ = recyclerViewFragment;
 	}
 
 	@Override
@@ -51,7 +48,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 				inflate(R.layout.recycler_view_item, viewGroup, false);
 		// Get retained cache
 		RetainFragment retainFragment =
-				RetainFragment.getInstance(recyclerView_.getActivity().getFragmentManager());
+				RetainFragment.getInstance(recyclerViewFragment_.getActivity().getFragmentManager());
 		bitmapLruCache_ = retainFragment.getRetainedCache();
 		if (bitmapLruCache_ == null){
 			// Get memory for LruCache
@@ -74,14 +71,14 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 				switch (item.getItemType()){
 					case PARENT:
 						// Navigate up
-						recyclerView_.modifyDataSet(item.getSource());
+						recyclerViewFragment_.modifyDataSet(item.getSource());
 						break;
 					case LOCAL_ITEM:
 						Log.d(LOG_TAG, "Clicked local");
 						break;
 					case DIRECTORY:
 						// Navigate to selected directory
-						recyclerView_.modifyDataSet(item.getSource());
+						recyclerViewFragment_.modifyDataSet(item.getSource());
 						break;
 				}
 			}
@@ -163,7 +160,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 //			cancelPotentialWork(item.getSource(), previewImageView);
 			// Fill views
 			previewImageView.setImageBitmap(null);
-			previewImageView.setImageDrawable(recyclerView_.getActivity().
+			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
 					getResources().getDrawable(android.R.drawable.stat_sys_upload));
 //			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
@@ -173,7 +170,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			// Cancel task linked to previewImageView
 //			cancelPotentialWork(item.getSource(), previewImageView);
 			// Fill views
-			previewImageView.setImageDrawable(recyclerView_.getActivity().
+			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
 					getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 //			progressBar.setVisibility(View.GONE);
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
@@ -182,15 +179,14 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		}
 //		progressBar.setVisibility(View.VISIBLE);
 //		loadBitmap(item.getSource(), previewImageView, progressBar);
-		int width = recyclerView_.getLayoutManager().getWidth();
+		int width = recyclerViewFragment_.getLayoutManager().getWidth();
 		ImageLoader.getInstance().displayImage("file://" + item.getSource(), previewImageView);
 	}
 
 	/**
 	 * Loads bitmap from given source
 	 */
-	private void loadBitmap(
-			String source, PreviewImageView previewImageView, ProgressBar progressBar) {
+	private void loadBitmap(String source, PreviewImageView previewImageView, ProgressBar progressBar) {
 		boolean isCancelled = cancelPotentialWork(source, previewImageView);
 		// First tries to get bitmap from a cache. If item is not in a cache, starts new task
 		final Bitmap bitmap = getBitmapFromCache(source);
@@ -199,7 +195,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			previewImageView.setImageBitmap(bitmap);
 		} else if (!isCancelled){
 			ImageLoadAsyncTask task = new ImageLoadAsyncTask(
-					previewImageView, progressBar, recyclerView_.getActivity(), this);
+					previewImageView, progressBar, recyclerViewFragment_.getActivity(), this);
 			previewImageView.setImageLoadAsyncTask(task);
 			task.execute(source);
 		}

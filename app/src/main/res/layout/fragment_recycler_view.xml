@@ -1,46 +1,58 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.ruswizards.rwgallery.RecyclerView.CustomRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
 			 xmlns:tools="http://schemas.android.com/tools"
 			 android:id="@+id/root_view"
 			 android:layout_width="match_parent"
 			 android:layout_height="match_parent"
 			 tools:context="com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment">
 
-	<ImageView
-		android:id="@+id/switch_to_linear_image_view"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:padding="12dp"
-		android:layout_alignParentTop="true"
-		android:layout_toStartOf="@+id/switch_to_grid_image_view"
-		android:layout_toLeftOf="@+id/switch_to_grid_image_view"
-		android:src="@drawable/ic_list_black"
-		android:clickable="true"/>
-
-	<ImageView
-		android:id="@+id/switch_to_grid_image_view"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:padding="12dp"
-		android:layout_alignParentTop="true"
-		android:layout_centerHorizontal="true"
-		android:src="@drawable/ic_view_grid"
-		android:clickable="true"/>
-
-	<ImageView
-		android:id="@+id/switch_to_staggered_grid_image_view"
-		android:layout_width="48dp"
-		android:layout_height="48dp"
-		android:padding="12dp"
-		android:layout_alignParentTop="true"
-		android:layout_toRightOf="@+id/switch_to_grid_image_view"
-		android:layout_toEndOf="@+id/switch_to_grid_image_view"
-		android:src="@android:drawable/ic_dialog_dialer"
-		android:clickable="true"/>
-
+	<!--<android.support.v7.widget.RecyclerView
+		android:id="@+id/recycler_view"
+		android:layout_below="@+id/expanding_menu_layout"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>-->
 	<android.support.v7.widget.RecyclerView
 		android:id="@+id/recycler_view"
-		android:layout_below="@+id/switch_to_grid_image_view"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>
 
-</RelativeLayout>
+	<RelativeLayout
+		android:id="@+id/expanding_menu_layout"
+		android:background="@android:color/holo_green_dark"
+		android:layout_alignParentBottom="true"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content">
+
+		<ImageView
+			android:id="@+id/switch_to_linear_image_view"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:padding="12dp"
+			android:layout_alignParentTop="true"
+			android:layout_toStartOf="@+id/switch_to_grid_image_view"
+			android:layout_toLeftOf="@+id/switch_to_grid_image_view"
+			android:src="@drawable/ic_list_black"
+			android:clickable="true"/>
+
+		<ImageView
+			android:id="@+id/switch_to_grid_image_view"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:padding="12dp"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:src="@drawable/ic_view_grid"
+			android:clickable="true"/>
+
+		<ImageView
+			android:id="@+id/switch_to_staggered_grid_image_view"
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:padding="12dp"
+			android:layout_alignParentTop="true"
+			android:layout_toRightOf="@+id/switch_to_grid_image_view"
+			android:layout_toEndOf="@+id/switch_to_grid_image_view"
+			android:src="@android:drawable/ic_dialog_dialer"
+			android:clickable="true"/>
+	</RelativeLayout>
+
+</com.ruswizards.rwgallery.RecyclerView.CustomRelativeLayout>
