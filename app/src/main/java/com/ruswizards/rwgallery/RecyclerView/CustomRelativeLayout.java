@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 21.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.RecyclerView;
 
 import android.content.Context;
@@ -12,13 +18,10 @@ import android.widget.RelativeLayout;
 import com.ruswizards.rwgallery.R;
 
 /**
- * Copyright (C) 2014 Rus Wizards
- * <p/>
- * Created: 21.01.2015
- * Vladimir Farafonov
+ * Custom class to intercept touch events
  */
 public class CustomRelativeLayout extends RelativeLayout {
-	private static final long ANIMATION_DURATION = 200;
+	private static final long ANIMATION_DURATION = 100;
 	private static final float SCROLL_SENSITIVITY = 0.3f;
 
 
@@ -38,6 +41,7 @@ public class CustomRelativeLayout extends RelativeLayout {
 
 	@Override
 	public void requestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+		// Do not allow child to disallow intercepting
 		if (getParent() != null) {
 			getParent().requestDisallowInterceptTouchEvent(disallowIntercept);
 		}
@@ -49,39 +53,37 @@ public class CustomRelativeLayout extends RelativeLayout {
 
 	public CustomRelativeLayout(Context context, AttributeSet attrs) {
 		this(context, attrs, 0);
-
 	}
 
 	public CustomRelativeLayout(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-
 		slop_ = ViewConfiguration.get(getContext()).getScaledTouchSlop();
 	}
 
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		return super.dispatchTouchEvent(ev);
-	}
-
+	/**
+	 * Monitors touches inside Recycler View. Checks gestures for any actions.
+	 *
+	 * @param ev Motion event
+	 */
 	@Override
 	public boolean onInterceptTouchEvent(MotionEvent ev) {
-		Log.d(LOG_TAG, "Intercept");
 		int action = MotionEventCompat.getActionMasked(ev);
 		int actionIndex = MotionEventCompat.getActionIndex(ev);
 		View menu = findViewById(R.id.expanding_menu_layout);
 		switch (action){
 			case MotionEvent.ACTION_DOWN:
+				// Set initial parameters
 				scrollPointerId_ = MotionEventCompat.getPointerId(ev, 0);
 				initialX_ = ev.getX() /*+ 0.5f*/;
 				initialY_ = ev.getY() /*+ 0.5f*/;
 				swipeDirection_ = Direction.STAND;
 				break;
 			case MotionEventCompat.ACTION_POINTER_DOWN:
+				// Set initial parameters on ACTION_POINTER_DOWN
 				scrollPointerId_ = MotionEventCompat.getPointerId(ev, actionIndex);
 				initialX_= (int) (MotionEventCompat.getX(ev, actionIndex) /*+ 0.5f*/);
 				initialY_ = (int) (MotionEventCompat.getY(ev, actionIndex) /*+ 0.5f*/);
 				break;
-
 			case MotionEvent.ACTION_MOVE:
 				int index = MotionEventCompat.findPointerIndex(ev, scrollPointerId_);
 				if (index < 0) {
@@ -91,10 +93,9 @@ public class CustomRelativeLayout extends RelativeLayout {
 				}
 				int x = (int) (MotionEventCompat.getX(ev, index) /*+ 0.5f*/);
 				int y = (int) (MotionEventCompat.getY(ev, index) /*+ 0.5f*/);
-
 				float deltaX = x - initialX_;
 				float deltaY = (initialY_ - y) * SCROLL_SENSITIVITY;
-
+				// Check direction of swiping is user just started gesture
 				if (swipeDirection_ == Direction.STAND) {
 					if (Math.abs(deltaY) > slop_) {
 						if (deltaY > 0) {
@@ -107,10 +108,11 @@ public class CustomRelativeLayout extends RelativeLayout {
 						swipeDirection_ = Direction.SIDE;
 					}
 				}
-
+				// Continue only with vertical gestures
 				if (swipeDirection_ != Direction.UP && swipeDirection_ != Direction.DOWN){
 					break;
 				}
+				// Move menu along swiping direction
 				int maxTranslation = menu.getHeight();
 				if (swipeDirection_ == Direction.UP && !isHidden_){
 					if (deltaY >= maxTranslation){
@@ -124,10 +126,12 @@ public class CustomRelativeLayout extends RelativeLayout {
 						menu.setTranslationY(0);
 					}
 				} else if (swipeDirection_ == Direction.DOWN && isHidden_){
-					if (Math.abs(deltaY) >= menu.getHeight()){
+					if (deltaY <= -menu.getHeight()){
 						isHidden_ = false;
 						isMoving_ = false;
 						menu.setTranslationY(0);
+					} else if (deltaY > 0){
+						menu.setTranslationY(maxTranslation);
 					} else {
 						menu.setTranslationY(maxTranslation + deltaY);
 						isMoving_ = true;
@@ -135,6 +139,7 @@ public class CustomRelativeLayout extends RelativeLayout {
 				}
 				break;
 			case MotionEvent.ACTION_UP:
+				// Finish incomplete movement
 				if (swipeDirection_ == Direction.UP || swipeDirection_ == Direction.DOWN) {
 					if (isMoving_) {
 						int multiplier;
