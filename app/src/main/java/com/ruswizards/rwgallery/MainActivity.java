@@ -49,10 +49,10 @@ public class MainActivity extends ActionBarActivity {
 				.cacheInMemory(true)
 				.cacheOnDisk(true)
 				.considerExifParams(true)
-				.showImageOnLoading(android.R.drawable.ic_menu_crop)
-						.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+//				.showImageOnLoading(android.R.drawable.ic_menu_crop)
+				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.resetViewBeforeLoading(true)
-				.displayer(new SimpleBitmapDisplayer())
+				.displayer(new FadeInBitmapDisplayer(200))
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.build();
 		File cacheDir = StorageUtils.getCacheDirectory(this);

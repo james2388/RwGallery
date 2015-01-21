@@ -79,8 +79,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
-		/*int slop = ViewConfiguration.get(getActivity()).getScaledTouchSlop();
-		recyclerView_.addOnItemTouchListener(new TouchListener());*/
 
 		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);

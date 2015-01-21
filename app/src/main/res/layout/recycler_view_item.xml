@@ -10,6 +10,7 @@
 		android:id="@+id/preview_image_view"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
+		android:background="@color/background_material_light"
 		android:adjustViewBounds="true"/>
 
 	<!--<ContentLoadingProgressBar
@@ -28,5 +29,6 @@
 		android:layout_below="@+id/preview_image_view"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
+		android:textColor="@color/textColorPrimary"
 		android:visibility="gone"/>
 </RelativeLayout>
