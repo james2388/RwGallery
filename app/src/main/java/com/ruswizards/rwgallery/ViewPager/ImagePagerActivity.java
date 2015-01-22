@@ -85,7 +85,6 @@ public class ImagePagerActivity extends FragmentActivity {
 
 		setContentView(R.layout.activity_image_pager);
 		setupActionBar();
-//		getActionBar().hide();
 
 		initializeImageLoader();
 
@@ -97,11 +96,28 @@ public class ImagePagerActivity extends FragmentActivity {
 		} else {
 			// TODO: add saving state
 		}
+		setTitle(dataSet_.get(openedItemNumber_).getTitle());
 
 		imagePagerAdapter_ = new ImagePagerAdapter(getSupportFragmentManager(), dataSet_.size(), dataSet_);
 		imagePager_ = (ViewPager) findViewById(R.id.images_view_pager);
 		imagePager_.setAdapter(imagePagerAdapter_);
 		imagePager_.setCurrentItem(openedItemNumber_);
+		imagePager_.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+			@Override
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+			}
+
+			@Override
+			public void onPageSelected(int position) {
+				setTitle(dataSet_.get(position).getTitle());
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int state) {
+
+			}
+		});
 
 		final View toolbarView = findViewById(R.id.fullscreen_content_controls);
 //		final View contentView = findViewById(R.id.fullscreen_content);
