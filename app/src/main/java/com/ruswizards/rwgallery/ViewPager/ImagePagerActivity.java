@@ -84,7 +84,8 @@ public class ImagePagerActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_image_pager);
-//		setupActionBar();
+		setupActionBar();
+//		getActionBar().hide();
 
 		initializeImageLoader();
 
@@ -104,7 +105,8 @@ public class ImagePagerActivity extends FragmentActivity {
 
 		final View toolbarView = findViewById(R.id.fullscreen_content_controls);
 //		final View contentView = findViewById(R.id.fullscreen_content);
-		final View contentView = findViewById(R.id.images_view_pager);
+		// TODO: can replace contentview with imagePager_
+		final View contentView = imagePager_;
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
 		systemUiHider_ = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);

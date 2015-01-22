@@ -118,6 +118,7 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
 				// Trigger the registered listener and cache the visibility
 				// state.
 				mOnVisibilityChangeListener.onVisibilityChange(false);
+				mActivity.getActionBar().hide();
 				mVisible = false;
 
 			} else {
@@ -134,6 +135,7 @@ public class SystemUiHiderHoneycomb extends SystemUiHiderBase {
 				// Trigger the registered listener and cache the visibility
 				// state.
 				mOnVisibilityChangeListener.onVisibilityChange(true);
+				mActivity.getActionBar().show();
 				mVisible = true;
 			}
 		}
