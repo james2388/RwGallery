@@ -42,7 +42,6 @@ public class ImagesViewingActivity extends FragmentActivity {
 	private static final long TOOLBAR_HIDE_ANIM_DURATION = 200;
 	private static final String LOG_TAG = "ImagesViewingActivity---";
 
-	private GestureDetectorCompat gestureDetector_;
 	private boolean isUiHidden_;
 	private Handler handler_;
 	private List<GalleryItem> dataSet_;
@@ -63,10 +62,6 @@ public class ImagesViewingActivity extends FragmentActivity {
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 		}
 		setContentView(R.layout.activity_images_viewing);
-
-
-
-		gestureDetector_ = new GestureDetectorCompat(this, new ImagesViewingGestureDetector());
 		handler_ = new Handler();
 		delayedHide(1000);
 
@@ -163,11 +158,10 @@ public class ImagesViewingActivity extends FragmentActivity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		gestureDetector_.onTouchEvent(ev);
 		return super.dispatchTouchEvent(ev);
 	}
 
-	private void toggleUi() {
+	public void toggleUi() {
 		View toolBarView;
 		toolBarView = findViewById(R.id.fullscreen_content_controls);
 		float toolBarTranslation;
@@ -197,13 +191,5 @@ public class ImagesViewingActivity extends FragmentActivity {
 		}
 		toolBarView.animate().translationY(toolBarTranslation).setDuration(TOOLBAR_HIDE_ANIM_DURATION);
 		isUiHidden_ = !isUiHidden_;
-	}
-
-	public class ImagesViewingGestureDetector extends GestureDetector.SimpleOnGestureListener {
-		@Override
-		public boolean onSingleTapUp(MotionEvent e) {
-			toggleUi();
-			return false;
-		}
 	}
 }

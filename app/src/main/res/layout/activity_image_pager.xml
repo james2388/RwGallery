@@ -6,16 +6,15 @@
 			 android:background="#0099cc"
 			 tools:context="com.ruswizards.rwgallery.ViewPager.ImagePagerActivity">
 
-	<android.support.v4.view.ViewPager
-		android:id="@+id/images_view_pager"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"/>
-
-	<!--<ImageView
+	<!--<android.support.v4.view.ViewPager
 		android:id="@+id/images_view_pager"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"/>-->
 
+	<com.ruswizards.rwgallery.ViewPager.CustomViewPager
+		android:id="@+id/images_view_pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
 	<!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc. -->
