@@ -164,12 +164,14 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}
 		// Copy selected files to dataSet_
 		for (File file : files){
-			if (file.isDirectory() && includeDirectories){
-				dataSet.add(new GalleryItem(
-								file.getName(),
-								file.getAbsolutePath(),
-								GalleryItem.ItemType.DIRECTORY)
-				);
+			if (file.isDirectory()){
+				if (includeDirectories) {
+					dataSet.add(new GalleryItem(
+									file.getName(),
+									file.getAbsolutePath(),
+									GalleryItem.ItemType.DIRECTORY)
+					);
+				}
 			} else {
 				dataSet.add(new GalleryItem(
 								file.getName(),

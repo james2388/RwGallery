@@ -40,6 +40,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 	public static final String EXTRA_SOURCE_DIRECTORY = "SourceDirectory";
 	public static final String EXTRA_ITEM_NUMBER = "ItemNumber";
 	private static final long TOOLBAR_HIDE_ANIM_DURATION = 200;
+	private static final String LOG_TAG = "ImagesViewingActivity---";
 
 	private GestureDetectorCompat gestureDetector_;
 	private boolean isUiHidden_;
@@ -76,11 +77,8 @@ public class ImagesViewingActivity extends FragmentActivity {
 			openedItemNumber_ = getIntent().getIntExtra(EXTRA_ITEM_NUMBER, -1);
 			String sourceDirectory = getIntent().getStringExtra(EXTRA_SOURCE_DIRECTORY);
 			RecyclerViewFragment.fillDataSet(sourceDirectory, dataSet_, false);
-		} else {
-			// TODO: add saving state
 		}
 		setTitle(dataSet_.get(openedItemNumber_).getTitle());
-
 		imagePagerAdapter_ = new ImagePagerAdapter(getSupportFragmentManager(), dataSet_.size(), dataSet_);
 		imagePager_ = (ViewPager) findViewById(R.id.images_view_pager);
 		imagePager_.setAdapter(imagePagerAdapter_);
@@ -88,12 +86,10 @@ public class ImagesViewingActivity extends FragmentActivity {
 		imagePager_.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
-
 			@Override
 			public void onPageSelected(int position) {
 				setTitle(dataSet_.get(position).getTitle());
 			}
-
 			@Override
 			public void onPageScrollStateChanged(int state) {}
 		});
@@ -143,16 +139,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			// TODO: If Settings has multiple levels, Up should navigate up
-			// that hierarchy.
-			NavUtils.navigateUpFromSameTask(this);
+			onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -176,7 +163,6 @@ public class ImagesViewingActivity extends FragmentActivity {
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
-		Log.d("---", "OnDispatchTouchevent");
 		gestureDetector_.onTouchEvent(ev);
 		return super.dispatchTouchEvent(ev);
 	}

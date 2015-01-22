@@ -78,15 +78,22 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						recyclerViewFragment_.modifyDataSet(item.getSource());
 						break;
 					case LOCAL_ITEM:
-						Log.d(LOG_TAG, "Clicked local");
 						ImageLoader.getInstance().destroy();
 						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagesViewingActivity.class);
 						int directories = 0;
-						for (int j = 0; j < dataSet_.size(); j++) {
+						/*for (int j = 0; j < dataSet_.size(); j++) {
 							if (dataSet_.get(j).getItemType() == GalleryItem.ItemType.PARENT || dataSet_.get(j).getItemType() == GalleryItem.ItemType.DIRECTORY){
 								directories++;
 							}
+						}*/
+						int j = 0;
+						while (j < position){
+							if (dataSet_.get(j).getItemType() == GalleryItem.ItemType.PARENT || dataSet_.get(j).getItemType() == GalleryItem.ItemType.DIRECTORY){
+								directories++;
+							}
+							j++;
 						}
+
 						openImageIntent.putExtra(ImagePagerActivity.EXTRA_ITEM_NUMBER, position - directories);
 						String sourceDirectory;
 						if (dataSet_.get(0) instanceof GalleryItem.ParentDirectory){

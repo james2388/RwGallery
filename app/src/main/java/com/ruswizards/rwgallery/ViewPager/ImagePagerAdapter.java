@@ -43,7 +43,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 	}
 
 	public static class ImageFragment extends Fragment {
-		public static final String ITEM_SOURCE = "ItemPosition";
+		public static final String ITEM_SOURCE = "ItemSource";
 
 		private String source_;
 		private ImageView fullscreenImageView_;
