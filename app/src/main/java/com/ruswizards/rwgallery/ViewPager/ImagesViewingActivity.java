@@ -1,20 +1,19 @@
 package com.ruswizards.rwgallery.ViewPager;
 
-import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Point;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
@@ -88,6 +87,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 			@Override
 			public void onPageScrollStateChanged(int state) {}
 		});
+
+		ImageButton shareButton = (ImageButton)findViewById(R.id.share_image_button);
+
 	}
 
 	private void initializeImageLoader() {
@@ -163,7 +165,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 
 	public void toggleUi() {
 		View toolBarView;
-		toolBarView = findViewById(R.id.fullscreen_content_controls);
+		toolBarView = findViewById(R.id.bottom_toolbar_layout);
 		float toolBarTranslation;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			int uiOptions;
@@ -191,5 +193,19 @@ public class ImagesViewingActivity extends FragmentActivity {
 		}
 		toolBarView.animate().translationY(toolBarTranslation).setDuration(TOOLBAR_HIDE_ANIM_DURATION);
 		isUiHidden_ = !isUiHidden_;
+	}
+
+	public void onClick(View view) {
+		switch (view.getId()){
+			case R.id.share_image_button:
+				Log.d(LOG_TAG, "Share file name: " + dataSet_.get(imagePager_.getCurrentItem()).getTitle());
+				File sharingItem = new File(dataSet_.get(imagePager_.getCurrentItem()).getSource());
+				Intent intent = new Intent();
+				intent.setAction(Intent.ACTION_SEND);
+				intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(sharingItem));
+				intent.setType("image/jpeg");
+				startActivity(Intent.createChooser(intent, getResources().getText(R.string.share)));
+				break;
+		}
 	}
 }

@@ -9,5 +9,6 @@
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_images_viewing">ImagesViewingActivity</string>
+	<string name="share">Send file with..</string>
 
 </resources>
