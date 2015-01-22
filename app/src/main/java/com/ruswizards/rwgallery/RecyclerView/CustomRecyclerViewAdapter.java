@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 import com.ruswizards.rwgallery.ViewPager.ImagePagerActivity;
+import com.ruswizards.rwgallery.ViewPager.ImagesViewingActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 					case LOCAL_ITEM:
 						Log.d(LOG_TAG, "Clicked local");
 						ImageLoader.getInstance().destroy();
-						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagePagerActivity.class);
+						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagesViewingActivity.class);
 						int directories = 0;
 						for (int j = 0; j < dataSet_.size(); j++) {
 							if (dataSet_.get(j).getItemType() == GalleryItem.ItemType.PARENT || dataSet_.get(j).getItemType() == GalleryItem.ItemType.DIRECTORY){

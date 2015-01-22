@@ -20,7 +20,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
@@ -43,7 +46,7 @@ public class ImagePagerActivity extends FragmentActivity {
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
 	 */
-	private static final boolean AUTO_HIDE = true;
+	private static final boolean AUTO_HIDE = false;
 
 	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
@@ -77,6 +80,7 @@ public class ImagePagerActivity extends FragmentActivity {
 	private ImagePagerAdapter imagePagerAdapter_;
 	private ViewPager imagePager_;
 	private SystemUiHider systemUiHider_;
+	private GestureDetectorCompat gestureDetector_;
 
 
 	@Override
@@ -104,9 +108,7 @@ public class ImagePagerActivity extends FragmentActivity {
 		imagePager_.setCurrentItem(openedItemNumber_);
 		imagePager_.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
-			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-
-			}
+			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 
 			@Override
 			public void onPageSelected(int position) {
@@ -114,13 +116,11 @@ public class ImagePagerActivity extends FragmentActivity {
 			}
 
 			@Override
-			public void onPageScrollStateChanged(int state) {
-
-			}
+			public void onPageScrollStateChanged(int state) {}
 		});
 
 		final View toolbarView = findViewById(R.id.fullscreen_content_controls);
-//		final View contentView = findViewById(R.id.fullscreen_content);
+//		final View contentView = findViewById(R.id.root_layout);
 		// TODO: can replace contentview with imagePager_
 		final View contentView = imagePager_;
 		// Set up an instance of SystemUiHider to control the system UI for
@@ -165,21 +165,24 @@ public class ImagePagerActivity extends FragmentActivity {
 					}
 				});
 
-		// Set up the user interaction to manually show or hide the system UI.
+		/*// Set up the user interaction to manually show or hide the system UI.
 		contentView.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
+				Log.d("---", "onClick");
 				if (TOGGLE_ON_CLICK) {
 					systemUiHider_.toggle();
 				} else {
 					systemUiHider_.show();
 				}
 			}
-		});
+		});*/
 
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
+		gestureDetector_ = new GestureDetectorCompat(this, new ImagesPagerGestureDetector(systemUiHider_));
+
 		findViewById(R.id.dummy_button).setOnTouchListener(delayHideTouchListener_);
 	}
 
@@ -248,16 +251,6 @@ public class ImagePagerActivity extends FragmentActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		int id = item.getItemId();
 		if (id == android.R.id.home) {
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			// TODO: If Settings has multiple levels, Up should navigate up
-			// that hierarchy.
-//			NavUtils.navigateUpFromSameTask(this);
 			onBackPressed();
 			return true;
 		}
@@ -294,5 +287,12 @@ public class ImagePagerActivity extends FragmentActivity {
 	private void delayedHide(int delayMillis) {
 		hideHandler_.removeCallbacks(hideRunnable_);
 		hideHandler_.postDelayed(hideRunnable_, delayMillis);
+	}
+
+	@Override
+	public boolean dispatchTouchEvent(MotionEvent ev) {
+		Log.d("---", "OnDispatchTouchevent");
+		gestureDetector_.onTouchEvent(ev);
+		return super.dispatchTouchEvent(ev);
 	}
 }
