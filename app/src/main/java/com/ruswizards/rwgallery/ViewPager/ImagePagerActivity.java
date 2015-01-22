@@ -11,25 +11,19 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.MainActivity;
-import com.ruswizards.rwgallery.RecyclerView.CustomRecyclerViewAdapter;
 import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
 import com.ruswizards.rwgallery.ViewPager.util.SystemUiHider;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.MenuItem;
-import android.support.v4.app.NavUtils;
-import android.widget.ImageView;
 
 import com.ruswizards.rwgallery.R;
 
@@ -48,27 +42,27 @@ public class ImagePagerActivity extends FragmentActivity {
 	/**
 	 * Whether or not the system UI should be auto-hidden after
 	 * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
-	 *//*
+	 */
 	private static final boolean AUTO_HIDE = true;
 
-	*//**
+	/**
 	 * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
 	 * user interaction before hiding the system UI.
-	 *//*
+	 */
 	private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
 
-	*//**
+	/**
 	 * If set, will toggle the system UI visibility upon interaction. Otherwise,
 	 * will show the system UI visibility upon interaction.
-	 *//*
+	 */
 	private static final boolean TOGGLE_ON_CLICK = true;
 
-	*//**
+	/**
 	 * The flags to pass to {@link SystemUiHider#getInstance}.
-	 *//*
+	 */
 	private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
-	*//**
+	/**
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 *//*
 	private SystemUiHider mSystemUiHider;*/
@@ -82,6 +76,7 @@ public class ImagePagerActivity extends FragmentActivity {
 	private List<GalleryItem> dataSet_;
 	private ImagePagerAdapter imagePagerAdapter_;
 	private ViewPager imagePager_;
+	private SystemUiHider systemUiHider_;
 
 
 	@Override
@@ -107,33 +102,18 @@ public class ImagePagerActivity extends FragmentActivity {
 		imagePager_.setAdapter(imagePagerAdapter_);
 		imagePager_.setCurrentItem(openedItemNumber_);
 
-
-
-		/*String path = getIntent().getStringExtra(EXTRA_IMAGE_SOURCE);
-		ImageView imageView = (ImageView) findViewById(R.id.images_view_pager);
-		ImageLoader.getInstance().displayImage("file://" + path, imageView);*/
-
-
-
-
-
-
-
-
-
-
-		/*final View controlsView = findViewById(R.id.fullscreen_content_controls);
-		final View contentView = findViewById(R.id.fullscreen_content);
-
+		final View toolbarView = findViewById(R.id.fullscreen_content_controls);
+//		final View contentView = findViewById(R.id.fullscreen_content);
+		final View contentView = findViewById(R.id.images_view_pager);
 		// Set up an instance of SystemUiHider to control the system UI for
 		// this activity.
-		mSystemUiHider = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
-		mSystemUiHider.setup();
-		mSystemUiHider
+		systemUiHider_ = SystemUiHider.getInstance(this, contentView, HIDER_FLAGS);
+		systemUiHider_.setup();
+		systemUiHider_
 				.setOnVisibilityChangeListener(new SystemUiHider.OnVisibilityChangeListener() {
 					// Cached values.
-					int mControlsHeight;
-					int mShortAnimTime;
+					int toolbarHeight;
+					int shortAnimTime;
 
 					@Override
 					@TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
@@ -143,21 +123,21 @@ public class ImagePagerActivity extends FragmentActivity {
 							// (Honeycomb MR2 and later), use it to animate the
 							// in-layout UI controls at the bottom of the
 							// screen.
-							if (mControlsHeight == 0) {
-								mControlsHeight = controlsView.getHeight();
+							if (toolbarHeight == 0) {
+								toolbarHeight = toolbarView.getHeight();
 							}
-							if (mShortAnimTime == 0) {
-								mShortAnimTime = getResources().getInteger(
+							if (shortAnimTime == 0) {
+								shortAnimTime = getResources().getInteger(
 										android.R.integer.config_shortAnimTime);
 							}
-							controlsView.animate()
-									.translationY(visible ? 0 : mControlsHeight)
-									.setDuration(mShortAnimTime);
+							toolbarView.animate()
+									.translationY(visible ? 0 : toolbarHeight)
+									.setDuration(shortAnimTime);
 						} else {
 							// If the ViewPropertyAnimator APIs aren't
 							// available, simply show or hide the in-layout UI
 							// controls.
-							controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+							toolbarView.setVisibility(visible ? View.VISIBLE : View.GONE);
 						}
 
 						if (visible && AUTO_HIDE) {
@@ -172,9 +152,9 @@ public class ImagePagerActivity extends FragmentActivity {
 			@Override
 			public void onClick(View view) {
 				if (TOGGLE_ON_CLICK) {
-					mSystemUiHider.toggle();
+					systemUiHider_.toggle();
 				} else {
-					mSystemUiHider.show();
+					systemUiHider_.show();
 				}
 			}
 		});
@@ -182,7 +162,7 @@ public class ImagePagerActivity extends FragmentActivity {
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);*/
+		findViewById(R.id.dummy_button).setOnTouchListener(delayHideTouchListener_);
 	}
 
 	private void initializeImageLoader() {
@@ -195,19 +175,27 @@ public class ImagePagerActivity extends FragmentActivity {
 				.displayer(new FadeInBitmapDisplayer(200))
 				.build();
 		File cacheDir = new File(StorageUtils.getCacheDirectory(this).getAbsolutePath() + "/ImagesPager/");
-
 		Point size = new Point();
 		getWindowManager().getDefaultDisplay().getSize(size);
 		int width = size.x;
 		int height = size.y;
 
+//		int side = width > height ? width : height;
+		int side;
+		if (width > height){
+			side = width;
+		} else {
+			side = height;
+		}
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
 					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * MainActivity.CACHE_MAX_MEMORY_PERCENTAGE)))
-					.memoryCacheExtraOptions(width, height)
-					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 45))
-					.diskCacheExtraOptions(width, height, null)
+//					.memoryCacheExtraOptions(width, height)
+					.memoryCacheExtraOptions(side, side)
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 100))
+//					.diskCacheExtraOptions(width, height, null)
+					.diskCacheExtraOptions(side, side, null)
 					.writeDebugLogs()
 					.defaultDisplayImageOptions(defaultOptions)
 					.build();
@@ -217,26 +205,26 @@ public class ImagePagerActivity extends FragmentActivity {
 		ImageLoader.getInstance().init(configuration);
 	}
 
-	/*@Override
+	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
 
 		// Trigger the initial hide() shortly after the activity has been
 		// created, to briefly hint to the user that UI controls
 		// are available.
-		delayedHide(100);
-	}*/
+		delayedHide(1000);
+	}
 
 	/**
 	 * Set up the {@link android.app.ActionBar}, if the API is available.
 	 */
-	/*@TargetApi(Build.VERSION_CODES.HONEYCOMB)
+	@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 	private void setupActionBar() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
 			// Show the Up button in the action bar.
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-	}*/
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
@@ -251,7 +239,8 @@ public class ImagePagerActivity extends FragmentActivity {
 			//
 			// TODO: If Settings has multiple levels, Up should navigate up
 			// that hierarchy.
-			NavUtils.navigateUpFromSameTask(this);
+//			NavUtils.navigateUpFromSameTask(this);
+			onBackPressed();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -262,7 +251,7 @@ public class ImagePagerActivity extends FragmentActivity {
 	 * system UI. This is to prevent the jarring behavior of controls going away
 	 * while interacting with activity UI.
 	 */
-	/*View.OnTouchListener mDelayHideTouchListener = new View.OnTouchListener() {
+	View.OnTouchListener delayHideTouchListener_ = new View.OnTouchListener() {
 		@Override
 		public boolean onTouch(View view, MotionEvent motionEvent) {
 			if (AUTO_HIDE) {
@@ -272,20 +261,20 @@ public class ImagePagerActivity extends FragmentActivity {
 		}
 	};
 
-	Handler mHideHandler = new Handler();
-	Runnable mHideRunnable = new Runnable() {
+	Handler hideHandler_ = new Handler();
+	Runnable hideRunnable_ = new Runnable() {
 		@Override
 		public void run() {
-			mSystemUiHider.hide();
+			systemUiHider_.hide();
 		}
 	};
 
-	*//**
+	/**
 	 * Schedules a call to hide() in [delay] milliseconds, canceling any
 	 * previously scheduled calls.
-	 *//*
+	 */
 	private void delayedHide(int delayMillis) {
-		mHideHandler.removeCallbacks(mHideRunnable);
-		mHideHandler.postDelayed(mHideRunnable, delayMillis);
-	}*/
+		hideHandler_.removeCallbacks(hideRunnable_);
+		hideHandler_.postDelayed(hideRunnable_, delayMillis);
+	}
 }

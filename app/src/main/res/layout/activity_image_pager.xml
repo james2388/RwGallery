@@ -26,10 +26,10 @@
 			  android:textStyle="bold"
 			  android:textSize="50sp"
 			  android:gravity="center"
-			  android:text="@string/dummy_content"/>
+			  android:text="@string/dummy_content"/>-->
 
-	&lt;!&ndash; This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. &ndash;&gt;
+	<!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
 	<FrameLayout android:layout_width="match_parent"
 				 android:layout_height="match_parent"
 				 android:fitsSystemWindows="true">
@@ -51,5 +51,5 @@
 					android:text="@string/dummy_button"/>
 
 		</LinearLayout>
-	</FrameLayout>-->
+	</FrameLayout>
 </FrameLayout>
