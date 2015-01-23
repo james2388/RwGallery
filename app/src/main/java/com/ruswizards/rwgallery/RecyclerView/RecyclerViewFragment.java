@@ -21,6 +21,8 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 
@@ -79,6 +81,11 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
+		recyclerView_.setItemViewCacheSize(6);
+		boolean pauseOnScroll = false;
+		boolean pauseOnFling = false;
+		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);
+		recyclerView_.setOnScrollListener(listener);
 
 		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);

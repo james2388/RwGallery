@@ -37,10 +37,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	private List<GalleryItem> dataSet_;
 	private RecyclerViewFragment recyclerViewFragment_;
+	private ImageLoader imageLoader_;
 
 	public CustomRecyclerViewAdapter(List<GalleryItem> dataSet, RecyclerViewFragment recyclerViewFragment){
 		dataSet_ = dataSet;
 		recyclerViewFragment_ = recyclerViewFragment;
+		imageLoader_ = ImageLoader.getInstance();
 	}
 
 	@Override
@@ -58,7 +60,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						recyclerViewFragment_.modifyDataSet(item.getSource());
 						break;
 					case LOCAL_ITEM:
-						ImageLoader.getInstance().destroy();
+						imageLoader_.destroy();
 						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagesViewingActivity.class);
 						int directories = 0;
 						int j = 0;
@@ -111,7 +113,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		}
-		ImageLoader.getInstance().displayImage("file://" + item.getSource(), previewImageView);
+		imageLoader_.displayImage("file://" + item.getSource(), previewImageView);
 	}
 
 	@Override

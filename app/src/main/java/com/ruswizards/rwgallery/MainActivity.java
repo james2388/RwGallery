@@ -47,10 +47,10 @@ public class MainActivity extends ActionBarActivity {
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
 				.cacheInMemory(true)
 				.cacheOnDisk(true)
-				.considerExifParams(true)
+//				.considerExifParams(true)
 //				.showImageOnLoading(android.R.drawable.ic_menu_crop)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-				.resetViewBeforeLoading(true)
+//				.resetViewBeforeLoading(true)
 				.displayer(new FadeInBitmapDisplayer(200))
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.build();
@@ -58,22 +58,24 @@ public class MainActivity extends ActionBarActivity {
 
 		Point size = new Point();
 		getWindowManager().getDefaultDisplay().getSize(size);
-		int width = size.x / 3;
-		int height = size.y / 3 * 2;
+
+		int side = size.x > size.y ? size.x : size.y;
+		side = side / 5	;
 
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
 					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
-					.memoryCacheExtraOptions(width, height)
+					.memoryCacheExtraOptions(side, side)
 					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 85))
-//					.diskCacheExtraOptions(width, height, null)
-					.writeDebugLogs()
+					.diskCacheExtraOptions(side, side, null)
+//					.writeDebugLogs()
 					.defaultDisplayImageOptions(defaultOptions)
 					.build();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+//		ImageLoader.getInstance().destroy();
 		ImageLoader.getInstance().init(configuration);
 	}
 
