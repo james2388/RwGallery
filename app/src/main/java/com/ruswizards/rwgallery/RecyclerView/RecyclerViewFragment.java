@@ -7,6 +7,8 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 
+import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.os.Environment;
@@ -21,13 +23,22 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,6 +51,8 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 
 	private static final String STATE_LAYOUT_MANAGER_TYPE = "LayoutManagerType";
 	private static final String STATE_LAST_PATH = "LastPath";
+	public final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
+
 
 	private List<GalleryItem> dataSet_;
 	private RecyclerView recyclerView_;
@@ -57,6 +70,8 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 							 Bundle savedInstanceState) {
 		// Inflates the layout
 		View rootView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
+
+
 		recyclerView_ = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 		// TODO: check if following could be deleted
 		// Set LayoutManager
@@ -81,11 +96,12 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
-		recyclerView_.setItemViewCacheSize(6);
-		boolean pauseOnScroll = false;
+
+
+		/*boolean pauseOnScroll = false;
 		boolean pauseOnFling = false;
 		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);
-		recyclerView_.setOnScrollListener(listener);
+		recyclerView_.setOnScrollListener(listener);*/
 
 		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);
@@ -175,7 +191,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				break;
 			case GRID_LAYOUT:
 				// TODO: add span count change (do not forget to save state)
-				layoutManager_ = new GridLayoutManager(getActivity(), 3);
+				layoutManager_ = new GridLayoutManager(getActivity(), 3).;
 				layoutManagerType_ = layoutManagerType;
 				break;
 			case STAGGERED_GRID_LAYOUT:

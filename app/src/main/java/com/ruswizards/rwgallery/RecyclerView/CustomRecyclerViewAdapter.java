@@ -9,6 +9,7 @@ package com.ruswizards.rwgallery.RecyclerView;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -19,12 +20,22 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
+import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
+import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
 import com.ruswizards.rwgallery.ViewPager.ImagePagerActivity;
 import com.ruswizards.rwgallery.ViewPager.ImagesViewingActivity;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,8 +100,47 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		});
 	}
 
+	private void initializeImageLoader() {
+		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+				.cacheInMemory(true)
+				.cacheOnDisk(true)
+//				.considerExifParams(true)
+//				.showImageOnLoading(android.R.drawable.ic_menu_crop)
+				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
+//				.resetViewBeforeLoading(true)
+				.displayer(new FadeInBitmapDisplayer(200))
+				.bitmapConfig(Bitmap.Config.RGB_565)
+				.build();
+		File cacheDir = StorageUtils.getCacheDirectory(recyclerViewFragment_.getActivity());
+
+		Point size = new Point();
+		recyclerViewFragment_.getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+
+		int side = size.x > size.y ? size.x : size.y;
+		side = side / 5	;
+
+		ImageLoaderConfiguration configuration = null;
+		try {
+			configuration = new ImageLoaderConfiguration.Builder(recyclerViewFragment_.getActivity())
+					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * RecyclerViewFragment.CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCacheExtraOptions(side, side)
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 85))
+					.diskCacheExtraOptions(side, side, null)
+//					.writeDebugLogs()
+					.defaultDisplayImageOptions(defaultOptions)
+					.build();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		ImageLoader.getInstance().init(configuration);
+	}
+
 	@Override
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
+		Log.d("---", "onBindViewHolder");
+		if (!imageLoader_.isInited()){
+			initializeImageLoader();
+		}
 		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 		previewImageView.setImageResource(android.R.color.holo_green_light);

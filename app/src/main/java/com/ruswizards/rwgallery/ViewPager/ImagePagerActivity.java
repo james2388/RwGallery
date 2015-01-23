@@ -211,7 +211,7 @@ public class ImagePagerActivity extends FragmentActivity {
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
-					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * MainActivity.CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * RecyclerViewFragment.CACHE_MAX_MEMORY_PERCENTAGE)))
 //					.memoryCacheExtraOptions(width, height)
 					.memoryCacheExtraOptions(side, side)
 					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 100))

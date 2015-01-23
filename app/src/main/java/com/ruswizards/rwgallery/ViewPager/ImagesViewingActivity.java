@@ -51,6 +51,18 @@ public class ImagesViewingActivity extends FragmentActivity {
 
 
 	@Override
+	protected void onDestroy() {
+		ImageLoader.getInstance().destroy();
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		initializeImageLoader();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
@@ -65,7 +77,6 @@ public class ImagesViewingActivity extends FragmentActivity {
 		handler_ = new Handler();
 		delayedHide(1000);
 
-		initializeImageLoader();
 
 		if (savedInstanceState == null) {
 			dataSet_ = new ArrayList<>();
@@ -119,7 +130,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
-					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * MainActivity.CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * RecyclerViewFragment.CACHE_MAX_MEMORY_PERCENTAGE)))
 //					.memoryCacheExtraOptions(width, height)
 					.memoryCacheExtraOptions(side, side)
 					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 100))
