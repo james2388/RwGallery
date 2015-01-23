@@ -38,6 +38,8 @@ import java.io.IOException;
  * Main activity of the app
  */
 public class MainActivity extends ActionBarActivity {
+	public final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
+
 	// TODO: add min height to previewImageView
 	@Override
 	protected void onResume() {
@@ -64,7 +66,7 @@ public class MainActivity extends ActionBarActivity {
 			configuration = new ImageLoaderConfiguration.Builder(this)
 					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * CACHE_MAX_MEMORY_PERCENTAGE)))
 					.memoryCacheExtraOptions(width, height)
-					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 45))
+					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 85))
 //					.diskCacheExtraOptions(width, height, null)
 					.writeDebugLogs()
 					.defaultDisplayImageOptions(defaultOptions)
@@ -75,7 +77,6 @@ public class MainActivity extends ActionBarActivity {
 		ImageLoader.getInstance().init(configuration);
 	}
 
-	public final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

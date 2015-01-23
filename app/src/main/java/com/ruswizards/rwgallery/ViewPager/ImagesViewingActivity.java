@@ -23,6 +23,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.MainActivity;
@@ -77,6 +78,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 		imagePager_ = (ViewPager) findViewById(R.id.images_view_pager);
 		imagePager_.setAdapter(imagePagerAdapter_);
 		imagePager_.setCurrentItem(openedItemNumber_);
+		imagePager_.setOffscreenPageLimit(2);
 		imagePager_.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 			@Override
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
@@ -99,7 +101,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 				.considerExifParams(true)
 //				.showImageOnLoading(android.R.drawable.ic_menu_crop)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-				.displayer(new FadeInBitmapDisplayer(200))
+				.displayer(new SimpleBitmapDisplayer())
 				.build();
 		File cacheDir = new File(StorageUtils.getCacheDirectory(this).getAbsolutePath() + "/ImagesPager/");
 		Point size = new Point();
