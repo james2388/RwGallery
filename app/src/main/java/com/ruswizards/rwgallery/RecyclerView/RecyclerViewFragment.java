@@ -29,8 +29,10 @@ import com.nostra13.universalimageloader.cache.memory.impl.LRULimitedMemoryCache
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.FailReason;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
+import com.nostra13.universalimageloader.core.listener.ImageLoadingListener;
 import com.nostra13.universalimageloader.core.listener.PauseOnScrollListener;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
@@ -97,7 +99,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 
-
+		// TODO: Add here menu hiding while scrolling
 		/*boolean pauseOnScroll = false;
 		boolean pauseOnFling = false;
 		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);
@@ -166,7 +168,50 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 	public void modifyDataSet(String path){
 		fillDataSet(path, dataSet_, true);
 		recyclerViewAdapter_.notifyDataSetChanged();
+//		startCaching();
 	}
+	// TODO: think about caching here
+	/*private void startCaching() {
+		ImageLoader.getInstance().loadImage("file://" + dataSet_.get(0).getSource(), new ImageLoadingListener() {
+			@Override
+			public void onLoadingStarted(String imageUri, View view) {
+
+			}
+
+			@Override
+			public void onLoadingFailed(String imageUri, View view, FailReason failReason) {
+
+			}
+
+			@Override
+			public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
+
+			}
+
+			@Override
+			public void onLoadingCancelled(String imageUri, View view) {
+
+			}
+		});
+	}
+
+	private static class CachingImagesListener implements ImageLoadingListener{
+		@Override
+		public void onLoadingStarted(String imageUri, View view) {}
+
+		@Override
+		public void onLoadingFailed(String imageUri, View view, FailReason failReason) {}
+
+		@Override
+		public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {}
+
+		@Override
+		public void onLoadingCancelled(String imageUri, View view) {
+
+		}
+	}*/
+
+
 
 	/**
 	 * Sets new LayoutManager type and applies changes
@@ -191,7 +236,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				break;
 			case GRID_LAYOUT:
 				// TODO: add span count change (do not forget to save state)
-				layoutManager_ = new GridLayoutManager(getActivity(), 3).;
+				layoutManager_ = new GridLayoutManager(getActivity(), 3);
 				layoutManagerType_ = layoutManagerType;
 				break;
 			case STAGGERED_GRID_LAYOUT:

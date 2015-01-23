@@ -148,19 +148,21 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
+			viewHolder.setIsRecyclable(false);
 			// Fill views
+			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
+			viewHolder.getTitleTextView().setText(item.getTitle());
 			previewImageView.setImageBitmap(null);
 			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
 					getResources().getDrawable(android.R.drawable.stat_sys_upload));
-			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
-			viewHolder.getTitleTextView().setText(item.getTitle());
 			return;
 		} else if (item.getItemType() == GalleryItem.ItemType.DIRECTORY){
+			viewHolder.setIsRecyclable(false);
 			// Fill views
-			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
-					getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
+			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
+					getResources().getDrawable(android.R.drawable.ic_dialog_dialer));
 			return;
 		}
 		imageLoader_.displayImage("file://" + item.getSource(), previewImageView);
