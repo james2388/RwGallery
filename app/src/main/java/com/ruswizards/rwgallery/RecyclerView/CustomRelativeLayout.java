@@ -94,19 +94,23 @@ public class CustomRelativeLayout extends RelativeLayout {
 				int x = (int) (MotionEventCompat.getX(ev, index) /*+ 0.5f*/);
 				int y = (int) (MotionEventCompat.getY(ev, index) /*+ 0.5f*/);
 				float deltaX = x - initialX_;
+//				float deltaY = (initialY_ - y) * SCROLL_SENSITIVITY;
 				float deltaY = (initialY_ - y) * SCROLL_SENSITIVITY;
-				// Check direction of swiping is user just started gesture
+				// Check direction of swiping if user just started gesture
 				if (swipeDirection_ == Direction.STAND) {
-					if (Math.abs(deltaY) > slop_) {
+					if (Math.abs(deltaY) > slop_ * 2) {
 						if (deltaY > 0) {
 							swipeDirection_ = Direction.UP;
+							initialY_ = initialY_ - deltaY;
 						} else {
 							swipeDirection_ = Direction.DOWN;
+							initialY_ = initialY_ + deltaY;
 						}
+						deltaY = (initialY_ - y) * SCROLL_SENSITIVITY;
 					}
-					if (Math.abs(deltaX) > slop_) {
+					/*if (Math.abs(deltaX) > slop_ * 3 ) {
 						swipeDirection_ = Direction.SIDE;
-					}
+					}*/
 				}
 				// Continue only with vertical gestures
 				if (swipeDirection_ != Direction.UP && swipeDirection_ != Direction.DOWN){

@@ -71,7 +71,9 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						recyclerViewFragment_.modifyDataSet(item.getSource());
 						break;
 					case LOCAL_ITEM:
-						imageLoader_.destroy();
+						if (imageLoader_.isInited()) {
+							imageLoader_.destroy();
+						}
 						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagesViewingActivity.class);
 						int directories = 0;
 						int j = 0;
@@ -137,13 +139,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 
 	@Override
 	public void onBindViewHolder(ViewHolder viewHolder, int i) {
-		Log.d("---", "onBindViewHolder");
 		if (!imageLoader_.isInited()){
 			initializeImageLoader();
 		}
 		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
-		previewImageView.setImageResource(android.R.color.holo_green_light);
+//		previewImageView.setImageResource(android.R.color.holo_green_light);
 		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
@@ -152,7 +153,6 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 			// Fill views
 			viewHolder.getTitleTextView().setVisibility(View.VISIBLE);
 			viewHolder.getTitleTextView().setText(item.getTitle());
-			previewImageView.setImageBitmap(null);
 			previewImageView.setImageDrawable(recyclerViewFragment_.getActivity().
 					getResources().getDrawable(android.R.drawable.stat_sys_upload));
 			return;

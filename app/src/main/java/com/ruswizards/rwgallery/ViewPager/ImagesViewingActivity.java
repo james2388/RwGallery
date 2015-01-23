@@ -52,7 +52,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 
 	@Override
 	protected void onDestroy() {
-		ImageLoader.getInstance().destroy();
+		if (ImageLoader.getInstance().isInited()) {
+			ImageLoader.getInstance().destroy();
+		}
 		super.onDestroy();
 	}
 

@@ -7,6 +7,7 @@
 package com.ruswizards.rwgallery.RecyclerView;
 
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Bundle;
@@ -73,7 +74,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		// Inflates the layout
 		View rootView = inflater.inflate(R.layout.fragment_recycler_view, container, false);
 
-
 		recyclerView_ = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 		// TODO: check if following could be deleted
 		// Set LayoutManager
@@ -98,12 +98,14 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
+		recyclerView_.setItemViewCacheSize(24);
 
 		// TODO: Add here menu hiding while scrolling
-		/*boolean pauseOnScroll = false;
-		boolean pauseOnFling = false;
-		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);
-		recyclerView_.setOnScrollListener(listener);*/
+		/*boolean pauseOnScroll = true;
+		boolean pauseOnFling = true;
+		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);*/
+		RecyclerOnScrollListener listener = new RecyclerOnScrollListener();
+		recyclerView_.setOnScrollListener(listener);
 
 		// Set listeners for icons to change LayoutManager type
 		ImageView imageView = (ImageView)rootView.findViewById(R.id.switch_to_linear_image_view);
@@ -229,14 +231,20 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 			}
 		} else position = 0;
 		// Set up layout manager
+		Point size = new Point();
+		getActivity().getWindowManager().getDefaultDisplay().getSize(size);
 		switch (layoutManagerType){
 			case LINEAR_LAYOUT:
-				layoutManager_ = new LinearLayoutManager(getActivity());
+//				layoutManager_ = new LinearLayoutManager(getActivity());
+				layoutManager_ = new CachingLinearLayoutManager(getActivity());
+				((CachingLinearLayoutManager) layoutManager_).setExtraLayoutSpace(size.y);
 				layoutManagerType_ = layoutManagerType;
 				break;
 			case GRID_LAYOUT:
 				// TODO: add span count change (do not forget to save state)
-				layoutManager_ = new GridLayoutManager(getActivity(), 3);
+//				layoutManager_ = new GridLayoutManager(getActivity(), 3);
+				layoutManager_ = new CachingGridLayoutManager(getActivity(), 3);
+				((CachingGridLayoutManager) layoutManager_).setExtraLayoutSpace(size.y);
 				layoutManagerType_ = layoutManagerType;
 				break;
 			case STAGGERED_GRID_LAYOUT:
@@ -285,6 +293,85 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				setLayoutManager(LayoutManagerType.STAGGERED_GRID_LAYOUT);
 				break;
 		}
+	}
+
+	public static class CachingLinearLayoutManager extends LinearLayoutManager {
+		private int extraLayoutSpace_ = -1;
+
+		public CachingLinearLayoutManager(Context context) {
+			super(context);
+		}
+
+		public CachingLinearLayoutManager(Context context, int orientation, boolean reverseLayout) {
+			super(context, orientation, reverseLayout);
+		}
+
+		public void setExtraLayoutSpace(int spaceSize) {
+			extraLayoutSpace_ = spaceSize;
+		}
+
+		@Override
+		protected int getExtraLayoutSpace(RecyclerView.State state) {
+			if (extraLayoutSpace_ > 0) {
+				return extraLayoutSpace_;
+			} else {
+				return super.getExtraLayoutSpace(state);
+			}
+		}
+	}
+
+	public static class CachingGridLayoutManager extends GridLayoutManager{
+		private int extraLayoutSpace_ = -1;
+
+		public CachingGridLayoutManager(Context context, int spanCount) {
+			super(context, spanCount);
+		}
+
+		public CachingGridLayoutManager(Context context, int spanCount, int orientation, boolean reverseLayout) {
+			super(context, spanCount, orientation, reverseLayout);
+		}
+
+
+		public void setExtraLayoutSpace(int spaceSize){
+			extraLayoutSpace_ = spaceSize;
+		}
+
+		@Override
+		protected int getExtraLayoutSpace(RecyclerView.State state) {
+			if (extraLayoutSpace_ > 0){
+				return extraLayoutSpace_;
+			} else {
+				return super.getExtraLayoutSpace(state);
+			}
+		}
+	}
+
+	public static class CachingStaggeredGridLayoutManager extends StaggeredGridLayoutManager{
+		private int extraLayoutSpace_ = -1;
+
+		/**
+		 * Creates a StaggeredGridLayoutManager with given parameters.
+		 *
+		 * @param spanCount   If orientation is vertical, spanCount is number of columns. If
+		 *                    orientation is horizontal, spanCount is number of rows.
+		 * @param orientation {@link #VERTICAL} or {@link #HORIZONTAL}
+		 */
+		public CachingStaggeredGridLayoutManager(int spanCount, int orientation) {
+			super(spanCount, orientation);
+		}
+
+		public void setExtraLayoutSpace(int spaceSize){
+			extraLayoutSpace_ = spaceSize;
+		}
+
+		/*@Override
+		protected int getExtraLayoutSpace(RecyclerView.State state) {
+			if (extraLayoutSpace_ > 0){
+				return extraLayoutSpace_;
+			} else {
+				return super.getExtraLayoutSpace(state);
+			}
+		}*/
 	}
 
 	public enum LayoutManagerType {
