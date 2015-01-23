@@ -91,53 +91,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		return rootView;
 	}
 
-	/**
-	 * Get data from directory and saves it to data set
-	 *
-	 * @param path Source directory path
-	 */
-	/*public void fillDataSet(String path) {
-		dataSet_.clear();
-		// Get images and directories
-		File directory = new File(path);
-		File[] files  = new File(path).listFiles(new FileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return file.isDirectory()
-						| file.getAbsolutePath().endsWith(".jpg")
-						| file.getAbsolutePath().endsWith(".png");
-			}
-		});
-		//Set first dataSet_ item for navigating to parent directory
-		if (directory.getParent() != null) {
-			dataSet_.add(new GalleryItem.ParentDirectory(
-					directory.getParentFile().getName(),
-					directory.getParent(),
-					GalleryItem.ItemType.PARENT,
-					directory.getAbsolutePath())
-			);
-		}
-		if (files == null){
-			return;
-		}
-		// Copy selected files to dataSet_
-		for (File file : files){
-			if (file.isDirectory()){
-				dataSet_.add(new GalleryItem(
-						file.getName(),
-						file.getAbsolutePath(),
-						GalleryItem.ItemType.DIRECTORY)
-				);
-			} else {
-				dataSet_.add(new GalleryItem(
-						file.getName(),
-						file.getAbsolutePath(),
-						GalleryItem.ItemType.LOCAL_ITEM)
-				);
-			}
-		}
-	}*/
-
 	public static void fillDataSet(String path, List<GalleryItem> dataSet, boolean includeDirectories) {
 		dataSet.clear();
 		// Get images and directories
@@ -264,10 +217,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 				setLayoutManager(LayoutManagerType.STAGGERED_GRID_LAYOUT);
 				break;
 		}
-	}
-
-	public RecyclerView.LayoutManager getLayoutManager (){
-		return layoutManager_;
 	}
 
 	public enum LayoutManagerType {
