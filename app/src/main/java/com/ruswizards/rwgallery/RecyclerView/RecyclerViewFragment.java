@@ -56,7 +56,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 	private static final String STATE_LAST_PATH = "LastPath";
 	public final static float CACHE_MAX_MEMORY_PERCENTAGE = 0.2f;
 
-
 	private List<GalleryItem> dataSet_;
 	private RecyclerView recyclerView_;
 	private RecyclerView.LayoutManager layoutManager_;
@@ -100,10 +99,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		recyclerView_.setAdapter(recyclerViewAdapter_);
 		recyclerView_.setItemViewCacheSize(24);
 
-		// TODO: Add here menu hiding while scrolling
-		/*boolean pauseOnScroll = true;
-		boolean pauseOnFling = true;
-		RecyclerOnScrollListener listener = new RecyclerOnScrollListener(ImageLoader.getInstance(), pauseOnScroll, pauseOnFling);*/
 		RecyclerOnScrollListener listener = new RecyclerOnScrollListener();
 		recyclerView_.setOnScrollListener(listener);
 
