@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 21.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.ViewPager;
 
 import android.content.Intent;
@@ -35,39 +41,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Activity for fullscreen image watching
+ */
 public class ImagesViewingActivity extends FragmentActivity {
 	public static final String EXTRA_SOURCE_DIRECTORY = "SourceDirectory";
 	public static final String EXTRA_ITEM_NUMBER = "ItemNumber";
 	private static final long TOOLBAR_HIDE_ANIM_DURATION = 200;
-	private static final String LOG_TAG = "ImagesViewingActivity---";
+	private static final int HIDE_DELAY_FIRST_RUN = 1000;
 
 	private boolean isUiHidden_;
 	private Handler handler_;
 	private List<GalleryItem> dataSet_;
 	private int openedItemNumber_;
-	private ImagePagerAdapter imagePagerAdapter_;
 	private ViewPager imagePager_;
 
 
-	@Override
-	protected void onDestroy() {
-		if (ImageLoader.getInstance().isInited()) {
-			ImageLoader.getInstance().destroy();
-		}
-		super.onDestroy();
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		initializeImageLoader();
-	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		// Set up initialization parameters for hiding UI elements
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 			View decorView = getWindow().getDecorView();
@@ -77,17 +71,19 @@ public class ImagesViewingActivity extends FragmentActivity {
 		}
 		setContentView(R.layout.activity_images_viewing);
 		handler_ = new Handler();
-		delayedHide(1000);
-
-
+		delayedHide(HIDE_DELAY_FIRST_RUN);							// Auto hide UI after some time
 		if (savedInstanceState == null) {
+			// Get data from parent activity
 			dataSet_ = new ArrayList<>();
 			openedItemNumber_ = getIntent().getIntExtra(EXTRA_ITEM_NUMBER, -1);
 			String sourceDirectory = getIntent().getStringExtra(EXTRA_SOURCE_DIRECTORY);
+			// Fill data in a list
 			RecyclerViewFragment.fillDataSet(sourceDirectory, dataSet_, false);
 		}
 		setTitle(dataSet_.get(openedItemNumber_).getTitle());
-		imagePagerAdapter_ = new ImagePagerAdapter(getSupportFragmentManager(), dataSet_.size(), dataSet_);
+		// Set up ViewPager and adapter
+		ImagePagerAdapter imagePagerAdapter_ =
+				new ImagePagerAdapter(getSupportFragmentManager(), dataSet_.size(), dataSet_);
 		imagePager_ = (ViewPager) findViewById(R.id.images_view_pager);
 		imagePager_.setAdapter(imagePagerAdapter_);
 		imagePager_.setCurrentItem(openedItemNumber_);
@@ -97,22 +93,22 @@ public class ImagesViewingActivity extends FragmentActivity {
 			public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {}
 			@Override
 			public void onPageSelected(int position) {
+				// Change title after image is opened
 				setTitle(dataSet_.get(position).getTitle());
 			}
 			@Override
 			public void onPageScrollStateChanged(int state) {}
 		});
-
-		ImageButton shareButton = (ImageButton)findViewById(R.id.share_image_button);
-
 	}
 
+	/**
+	 * Initialization of ImageLoader
+	 */
 	private void initializeImageLoader() {
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
 				.cacheInMemory(false)
 				.cacheOnDisk(false)
 				.considerExifParams(true)
-//				.showImageOnLoading(android.R.drawable.ic_menu_crop)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
 				.displayer(new SimpleBitmapDisplayer())
 				.build();
@@ -121,8 +117,6 @@ public class ImagesViewingActivity extends FragmentActivity {
 		getWindowManager().getDefaultDisplay().getSize(size);
 		int width = size.x;
 		int height = size.y;
-
-//		int side = width > height ? width : height;
 		int side;
 		if (width > height){
 			side = width;
@@ -132,7 +126,8 @@ public class ImagesViewingActivity extends FragmentActivity {
 		ImageLoaderConfiguration configuration = null;
 		try {
 			configuration = new ImageLoaderConfiguration.Builder(this)
-					.memoryCache(new LRULimitedMemoryCache((int) (Runtime.getRuntime().maxMemory() * RecyclerViewFragment.CACHE_MAX_MEMORY_PERCENTAGE)))
+					.memoryCache(new LRULimitedMemoryCache(
+							(int) (Runtime.getRuntime().maxMemory() * RecyclerViewFragment.CACHE_MAX_MEMORY_PERCENTAGE)))
 //					.memoryCacheExtraOptions(width, height)
 					.memoryCacheExtraOptions(side, side)
 					.diskCache(new LruDiscCache(cacheDir, new HashCodeFileNameGenerator(), 1024 * 1024 * 100))
@@ -157,6 +152,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 		return super.onOptionsItemSelected(item);
 	}
 
+	/**
+	 * Runnable to toggle UI elements
+	 */
 	Runnable toggleRunnable_ = new Runnable() {
 		@Override
 		public void run() {
@@ -165,23 +163,20 @@ public class ImagesViewingActivity extends FragmentActivity {
 	};
 
 	/**
-	 * Schedules a call to hide() in [delay] milliseconds, canceling any
-	 * previously scheduled calls.
+	 * Schedules a call to {@link #toggleUi()}.
 	 */
 	private void delayedHide(int delayMillis) {
 		handler_.removeCallbacks(toggleRunnable_);
 		handler_.postDelayed(toggleRunnable_, delayMillis);
 	}
 
-	@Override
-	public boolean dispatchTouchEvent(MotionEvent ev) {
-		return super.dispatchTouchEvent(ev);
-	}
-
+	/**
+	 * Toggles UI visibility with animation
+	 */
 	public void toggleUi() {
-		View toolBarView;
-		toolBarView = findViewById(R.id.bottom_toolbar_layout);
+		View toolBarView = findViewById(R.id.bottom_toolbar_layout);
 		float toolBarTranslation;
+		// Toggle action bar and set up parameters for toggling bottom bar depending on Android API level
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
 			int uiOptions;
 			if (isUiHidden_){
@@ -190,7 +185,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 				toolBarTranslation = 0;
 			} else {
 				getActionBar().hide();
-				uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
+				uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN |
+						View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+						View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 				toolBarTranslation = toolBarView.getHeight();
 			}
 			View decorView = getWindow().getDecorView();
@@ -203,9 +200,11 @@ public class ImagesViewingActivity extends FragmentActivity {
 			} else {
 				getActionBar().hide();
 				toolBarTranslation = toolBarView.getHeight();
-				getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+				getWindow().setFlags(
+						WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			}
 		}
+		// Animate toolbar toggling
 		toolBarView.animate().translationY(toolBarTranslation).setDuration(TOOLBAR_HIDE_ANIM_DURATION);
 		isUiHidden_ = !isUiHidden_;
 	}
@@ -213,7 +212,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 	public void onClick(View view) {
 		switch (view.getId()){
 			case R.id.share_image_button:
-				Log.d(LOG_TAG, "Share file name: " + dataSet_.get(imagePager_.getCurrentItem()).getTitle());
+				// Opens app choosing dialog for sharing image
 				File sharingItem = new File(dataSet_.get(imagePager_.getCurrentItem()).getSource());
 				Intent intent = new Intent();
 				intent.setAction(Intent.ACTION_SEND);
@@ -222,5 +221,19 @@ public class ImagesViewingActivity extends FragmentActivity {
 				startActivity(Intent.createChooser(intent, getResources().getText(R.string.share)));
 				break;
 		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		if (ImageLoader.getInstance().isInited()) {
+			ImageLoader.getInstance().destroy();
+		}
+		super.onDestroy();
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		initializeImageLoader();
 	}
 }

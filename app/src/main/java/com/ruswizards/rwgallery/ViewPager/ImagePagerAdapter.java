@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 21.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.ViewPager;
 
 import android.os.Bundle;
@@ -17,10 +23,7 @@ import com.ruswizards.rwgallery.R;
 import java.util.List;
 
 /**
- * Copyright (C) 2014 Rus Wizards
- * <p/>
- * Created: 21.01.2015
- * Vladimir Farafonov
+ * Adapter class for ViewPager
  */
 public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 	private int size_;
@@ -42,12 +45,19 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 		return size_;
 	}
 
+	/**
+	 * Fragment to use in a ViewPager
+	 */
 	public static class ImageFragment extends Fragment {
 		public static final String ITEM_SOURCE = "ItemSource";
 
 		private String source_;
 		private ImageView fullscreenImageView_;
 
+		/**
+		 * Creates an instance of a fragment with image
+		 * @param source Image's source
+		 */
 		static ImageFragment newInstance(String source){
 			ImageFragment fragment = new ImageFragment();
 			Bundle arguments = new Bundle();

@@ -6,18 +6,13 @@
  */
 package com.ruswizards.rwgallery.RecyclerView;
 
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
-import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
@@ -31,12 +26,10 @@ import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
 import com.ruswizards.rwgallery.R;
-import com.ruswizards.rwgallery.ViewPager.ImagePagerActivity;
 import com.ruswizards.rwgallery.ViewPager.ImagesViewingActivity;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,14 +76,14 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 							}
 							j++;
 						}
-						openImageIntent.putExtra(ImagePagerActivity.EXTRA_ITEM_NUMBER, position - directories);
+						openImageIntent.putExtra(ImagesViewingActivity.EXTRA_ITEM_NUMBER, position - directories);
 						String sourceDirectory;
 						if (dataSet_.get(0) instanceof GalleryItem.ParentDirectory){
 							sourceDirectory = ((GalleryItem.ParentDirectory)dataSet_.get(0)).getPath();
 						} else {
 							sourceDirectory = "/";
 						}
-						openImageIntent.putExtra(ImagePagerActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
+						openImageIntent.putExtra(ImagesViewingActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
 						recyclerViewFragment_.getActivity().startActivity(openImageIntent);
 						break;
 					case DIRECTORY:

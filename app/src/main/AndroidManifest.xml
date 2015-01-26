@@ -19,17 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ViewPager.ImagePagerActivity"
-            android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="@string/title_activity_image_pager"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/FullscreenTheme" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.ruswizards.rwgallery.MainActivity" />
-        </activity>
-        <activity
+		<activity
             android:name=".ViewPager.ImagesViewingActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_images_viewing"

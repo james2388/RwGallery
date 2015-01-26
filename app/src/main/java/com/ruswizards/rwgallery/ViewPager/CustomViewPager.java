@@ -1,3 +1,9 @@
+/**
+ * Copyright (C) 2014 Rus Wizards
+ * <p/>
+ * Created: 22.01.2015
+ * Vladimir Farafonov
+ */
 package com.ruswizards.rwgallery.ViewPager;
 
 import android.content.Context;
@@ -9,16 +15,14 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 
 /**
- * Copyright (C) 2014 Rus Wizards
- * <p/>
- * Created: 22.01.2015
- * Vladimir Farafonov
+ * ViewPager class
  */
 public class CustomViewPager extends ViewPager {
 	private GestureDetectorCompat gestureDetector_;
 
 	@Override
 	public boolean dispatchTouchEvent(MotionEvent ev) {
+		//Set up gesture detector and dispatch event to it
 		if (gestureDetector_ == null){
 			gestureDetector_ = new GestureDetectorCompat(getContext(), new ViewPagerGestureDetector());
 		}
@@ -34,9 +38,13 @@ public class CustomViewPager extends ViewPager {
 		super(context, attrs);
 	}
 
+	/**
+	 * Custom gesture detector class
+	 */
 	public class ViewPagerGestureDetector extends GestureDetector.SimpleOnGestureListener {
 		@Override
 		public boolean onSingleTapUp(MotionEvent e) {
+			// Toggle UI on a single tap
 			if (getContext() instanceof ImagesViewingActivity){
 				ImagesViewingActivity activity = (ImagesViewingActivity) getContext();
 				activity.toggleUi();
