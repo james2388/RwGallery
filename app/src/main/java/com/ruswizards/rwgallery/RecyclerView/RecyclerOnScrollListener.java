@@ -6,6 +6,7 @@
  */
 package com.ruswizards.rwgallery.RecyclerView;
 
+import android.graphics.Point;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.Log;
@@ -72,6 +73,24 @@ public class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {
 				// Reset overall scrolling on a new swipe
 				overallScroll_ = 0;
 				break;
+			case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
+				Point size = new Point();
+				((MainActivity) recyclerView.getContext()).getWindowManager().getDefaultDisplay().getSize(size);
+				changeAdapterExtraSpace(recyclerView, size.y);
+				break;
+			case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
+				changeAdapterExtraSpace(recyclerView, 0);
+				break;
+		}
+	}
+
+	private void changeAdapterExtraSpace(RecyclerView recyclerView, int extraSpace) {
+		if (recyclerView.getLayoutManager() instanceof RecyclerViewFragment.CachingLinearLayoutManager){
+			((RecyclerViewFragment.CachingLinearLayoutManager) recyclerView.getLayoutManager()).setExtraLayoutSpace(extraSpace);
+		} else if (recyclerView.getLayoutManager() instanceof RecyclerViewFragment.CachingGridLayoutManager){
+			((RecyclerViewFragment.CachingGridLayoutManager) recyclerView.getLayoutManager()).setExtraLayoutSpace(extraSpace);
+		} else if (recyclerView.getLayoutManager() instanceof RecyclerViewFragment.CachingStaggeredGridLayoutManager){
+			((RecyclerViewFragment.CachingStaggeredGridLayoutManager) recyclerView.getLayoutManager()).setExtraLayoutSpace(extraSpace);
 		}
 	}
 

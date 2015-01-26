@@ -97,7 +97,6 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		setLayoutManager(layoutManagerType_);
 		recyclerViewAdapter_ = new CustomRecyclerViewAdapter(dataSet_, this);
 		recyclerView_.setAdapter(recyclerViewAdapter_);
-		recyclerView_.setItemViewCacheSize(24);
 
 		RecyclerOnScrollListener listener = new RecyclerOnScrollListener();
 		recyclerView_.setOnScrollListener(listener);
@@ -333,6 +332,7 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 
 		@Override
 		protected int getExtraLayoutSpace(RecyclerView.State state) {
+
 			if (extraLayoutSpace_ > 0){
 				return extraLayoutSpace_;
 			} else {

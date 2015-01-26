@@ -109,7 +109,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 //				.considerExifParams(true)
 //				.showImageOnLoading(android.R.drawable.ic_menu_crop)
 				.imageScaleType(ImageScaleType.EXACTLY_STRETCHED)
-//				.resetViewBeforeLoading(true)
+				.resetViewBeforeLoading(true)
 				.displayer(new FadeInBitmapDisplayer(200))
 				.bitmapConfig(Bitmap.Config.RGB_565)
 				.build();
@@ -145,7 +145,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
 //		previewImageView.setImageResource(android.R.color.holo_green_light);
-		viewHolder.getTitleTextView().setVisibility(View.GONE);
+//		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
