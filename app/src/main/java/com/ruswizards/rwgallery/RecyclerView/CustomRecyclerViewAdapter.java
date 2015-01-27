@@ -6,11 +6,13 @@
  */
 package com.ruswizards.rwgallery.RecyclerView;
 
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.os.Build;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
@@ -89,11 +91,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						}
 						openImageIntent.putExtra(ImagesViewingActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-							/*ActivityOptions activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+							ActivityOptionsCompat activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
 									recyclerViewFragment_.getActivity(),
-									new Pair<View, String>(newView.findViewById(R.id.preview_image_view))
-							);*/
-							recyclerViewFragment_.getActivity().startActivity(openImageIntent, ActivityOptions.makeSceneTransitionAnimation(recyclerViewFragment_.getActivity(), previewImageView, previewImageView.getTransitionName()).toBundle());
+									new Pair<View, String>(newView.findViewById(R.id.preview_image_view), ImagesViewingActivity.IMAGE_VIEW_TRANSITION_NAME)
+							);
+							ActivityCompat.startActivity(recyclerViewFragment_.getActivity(), openImageIntent, activityOptions.toBundle());
+//							recyclerViewFragment_.getActivity().startActivity(openImageIntent, ActivityOptions.makeSceneTransitionAnimation(recyclerViewFragment_.getActivity(), previewImageView, previewImageView.getTransitionName()).toBundle());
 						} else {
 							recyclerViewFragment_.getActivity().startActivity(openImageIntent);
 						}
@@ -153,10 +156,6 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 //		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			previewImageView.setTransitionName(item.getSource());
-			previewImageView.setTag(item.getSource());
-		}
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
 			viewHolder.setIsRecyclable(false);
 			// Fill views

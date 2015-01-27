@@ -46,6 +46,7 @@ import java.util.Map;
 public class MainActivity extends ActionBarActivity {
 	// TODO: add min height to previewImageView
 
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

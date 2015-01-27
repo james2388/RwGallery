@@ -13,6 +13,9 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.ViewCompat;
+import android.transition.Transition;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,7 +98,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			ImageLoader.getInstance().displayImage("file://" + source_, fullscreenImageView_);
+//			ImageLoader.getInstance().displayImage("file://" + source_, fullscreenImageView_);
 		}
 
 		@Nullable
@@ -104,8 +107,9 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 			super.onCreateView(inflater, container, savedInstanceState);
 			final View view = inflater.inflate(R.layout.fragment_images_pager_item, container, false);
 			fullscreenImageView_ = (ImageView) view.findViewById(R.id.fullscreen_image_view);
-			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-				fullscreenImageView_.setTransitionName(source_);
+			fullscreenImageView_.setImageBitmap(ImageLoader.getInstance().loadImageSync("file://" + source_));
+			/*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				*//*fullscreenImageView_.setTransitionName(source_);
 				view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
 					@Override
 					public boolean onPreDraw() {
@@ -113,12 +117,43 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 						getActivity().startPostponedEnterTransition();
 						return true;
 					}
+				});*//*
+			}*/
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+				Log.d("---", "onCreateView");
+				ViewCompat.setTransitionName(fullscreenImageView_, ImagesViewingActivity.IMAGE_VIEW_TRANSITION_NAME);
+				Transition transition = getActivity().getWindow().getSharedElementEnterTransition();
+				transition.addListener(new Transition.TransitionListener() {
+					@Override
+					public void onTransitionStart(Transition transition) {
+						transition.removeListener(this);
+					}
+
+					@Override
+					public void onTransitionEnd(Transition transition) {
+
+					}
+
+					@Override
+					public void onTransitionCancel(Transition transition) {
+						transition.removeListener(this);
+					}
+
+					@Override
+					public void onTransitionPause(Transition transition) {
+
+					}
+
+					@Override
+					public void onTransitionResume(Transition transition) {
+
+					}
 				});
 			}
 			return view;
 		}
 
-		public View getSharedElement() {
+		/*public View getSharedElement() {
 			View view = getView().findViewById(R.id.fullscreen_image_view);
 			if (isViewInBounds(getView().findViewById(R.id.view_pager_item_root_layout), view)){
 				return view;
@@ -130,6 +165,6 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 			Rect containerBounds = new Rect();
 			container.getHitRect(containerBounds);
 			return view.getLocalVisibleRect(containerBounds);
-		}
+		}*/
 	}
 }
