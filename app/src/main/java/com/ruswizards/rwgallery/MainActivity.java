@@ -6,14 +6,18 @@
  */
 package com.ruswizards.rwgallery;
 
+import android.annotation.TargetApi;
 import android.app.FragmentTransaction;
+import android.app.SharedElementCallback;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.Build;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
@@ -33,6 +37,8 @@ import com.ruswizards.rwgallery.RecyclerView.RecyclerViewFragment;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main activity of the app
@@ -72,5 +78,9 @@ public class MainActivity extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	public static boolean isLollipop(){
+		return Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP;
 	}
 }

@@ -6,9 +6,13 @@
  */
 package com.ruswizards.rwgallery.RecyclerView;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
+import android.os.Build;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,13 +54,13 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 	}
 
 	@Override
-	public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
-		View newView = LayoutInflater.from(viewGroup.getContext()).
+	public ViewHolder onCreateViewHolder(final ViewGroup viewGroup, int i) {
+		final View newView = LayoutInflater.from(viewGroup.getContext()).
 				inflate(R.layout.recycler_view_item, viewGroup, false);
 		// Return ViewHolder with set up item click listener
 		return new ViewHolder(newView, new ViewHolder.ViewHolderClicksInterface() {
 			@Override
-			public void itemClicked(int position) {
+			public void itemClicked(int position, PreviewImageView previewImageView) {
 				GalleryItem item = dataSet_.get(position);
 				switch (item.getItemType()){
 					case PARENT:
@@ -84,7 +88,15 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 							sourceDirectory = "/";
 						}
 						openImageIntent.putExtra(ImagesViewingActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
-						recyclerViewFragment_.getActivity().startActivity(openImageIntent);
+						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+							/*ActivityOptions activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+									recyclerViewFragment_.getActivity(),
+									new Pair<View, String>(newView.findViewById(R.id.preview_image_view))
+							);*/
+							recyclerViewFragment_.getActivity().startActivity(openImageIntent, ActivityOptions.makeSceneTransitionAnimation(recyclerViewFragment_.getActivity(), previewImageView, previewImageView.getTransitionName()).toBundle());
+						} else {
+							recyclerViewFragment_.getActivity().startActivity(openImageIntent);
+						}
 						break;
 					case DIRECTORY:
 						// Navigate to selected directory
@@ -137,10 +149,14 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		}
 		// Reset views
 		PreviewImageView previewImageView = viewHolder.getPreviewImageView();
-//		previewImageView.setImageResource(android.R.color.holo_green_light);
+		previewImageView.setImageResource(android.R.color.holo_green_light);
 //		viewHolder.getTitleTextView().setVisibility(View.GONE);
 		// Fill views
 		GalleryItem item = dataSet_.get(i);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			previewImageView.setTransitionName(item.getSource());
+			previewImageView.setTag(item.getSource());
+		}
 		if (item.getItemType() == GalleryItem.ItemType.PARENT){
 			viewHolder.setIsRecyclable(false);
 			// Fill views
@@ -182,7 +198,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 				@Override
 				public void onClick(View v) {
 					// TODO: if needed check view that was clicked and call appropriate method from interface
-					clickListener.itemClicked(getPosition());
+					clickListener.itemClicked(getPosition(), previewImageView_);
 				}
 			});
 			titleTextView_ = (TextView) itemView.findViewById(R.id.title_text_view);
@@ -193,7 +209,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 		 * Interface to handle item clicks
 		 */
 		public interface ViewHolderClicksInterface{
-			public void itemClicked(int position);
+			public void itemClicked(int position, PreviewImageView previewImageView_);
 			// TODO: add here handle click on selection checkbox;
 		}
 

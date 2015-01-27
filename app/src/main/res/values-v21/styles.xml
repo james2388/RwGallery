@@ -1,6 +1,27 @@
 <resources>
 
 	<!-- Base application theme. -->
-	<style name="AppTheme" parent="AppTheme.Base"/>
+	<style name="AppTheme" parent="AppTheme.Base">
+		<item name="android:windowActivityTransitions">true</item>
+
+		<item name="android:windowContentTransitions">true</item>
+		<item name="android:windowSharedElementEnterTransition">@transition/preview_to_full_transition</item>
+		<item name="android:windowSharedElementExitTransition">@transition/preview_to_full_transition</item>
+	</style>
+
+	<style name="FullscreenTheme" parent="android:Theme.DeviceDefault">
+		<item name="android:windowContentOverlay">@null</item>
+		<item name="android:windowBackground">@null</item>
+		<item name="metaButtonBarStyle">@style/ButtonBar</item>
+		<item name="metaButtonBarButtonStyle">@style/ButtonBarButton</item>
+
+		<item name="android:windowActionBar">true</item>
+
+		<item name="android:windowActivityTransitions">true</item>
+
+		<item name="android:windowContentTransitions">true</item>
+		<item name="android:windowSharedElementEnterTransition">@transition/preview_to_full_transition</item>
+		<item name="android:windowSharedElementExitTransition">@transition/preview_to_full_transition</item>
+	</style>
 
 </resources>

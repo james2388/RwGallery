@@ -10,5 +10,6 @@
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="title_activity_images_viewing">ImagesViewingActivity</string>
 	<string name="share">Send file with..</string>
+	<string name="preview_to_full_transition_name">preview_to_full</string>
 
 </resources>

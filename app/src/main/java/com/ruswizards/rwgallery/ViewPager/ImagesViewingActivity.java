@@ -6,20 +6,29 @@
  */
 package com.ruswizards.rwgallery.ViewPager;
 
+import android.annotation.TargetApi;
+import android.app.SharedElementCallback;
 import android.content.Intent;
 import android.graphics.Point;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.ViewPager;
+import android.transition.Fade;
+import android.transition.Slide;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
 import com.nostra13.universalimageloader.cache.disc.naming.HashCodeFileNameGenerator;
@@ -40,6 +49,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Activity for fullscreen image watching
@@ -55,14 +65,13 @@ public class ImagesViewingActivity extends FragmentActivity {
 	private List<GalleryItem> dataSet_;
 	private int openedItemNumber_;
 	private ViewPager imagePager_;
-
-
+	private ImagePagerAdapter imagePagerAdapter_;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// Set up initialization parameters for hiding UI elements
-		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			int uiOptions = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 			View decorView = getWindow().getDecorView();
 			decorView.setSystemUiVisibility(uiOptions);
@@ -70,6 +79,124 @@ public class ImagesViewingActivity extends FragmentActivity {
 			getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN);
 		}
 		setContentView(R.layout.activity_images_viewing);
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			postponeEnterTransition();
+			SharedElementCallback sharedElementCallback_ = new SharedElementCallback() {
+				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+				@Override
+				public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+					View sharedView = imagePagerAdapter_.getCurrentImageFragment().getSharedElement();
+					if (sharedView == null){
+						names.clear();
+						sharedElements.clear();
+					} else {
+						//TODO: here must be check for old and new positions comparison
+						names.clear();
+						sharedElements.clear();
+						names.add(sharedView.getTransitionName());
+						sharedElements.put(sharedView.getTransitionName(), sharedView);
+					}
+				}
+
+				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+				@Override
+				public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+					//TODO: add isReturning
+					getWindow().setEnterTransition(makeEnterTransition(getSharedElement(sharedElements)));
+				}
+
+				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+				@Override
+				public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+					//TODO: add isReturning
+					getWindow().setReturnTransition(makeReturnTransition());
+				}
+
+				private View getSharedElement(List<View> sharedElements) {
+					for (View view : sharedElements){
+						if (view instanceof ImageView){					//TODO: possible PreviewImageView
+							return view;
+						}
+					}
+					return null;
+				}
+
+				@TargetApi(Build.VERSION_CODES.KITKAT)
+				private Transition makeEnterTransition(View sharedElement) {
+					View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
+
+					TransitionSet enterTransition = new TransitionSet();
+					// TODO: change transition
+			/*// Play a circular reveal animation starting beneath the shared element.
+			Transition circularReveal = new CircularReveal(sharedElement);
+			circularReveal.addTarget(rootView.findViewById(R.id.reveal_container));
+			enterTransition.addTransition(circularReveal);
+
+			// Slide the cards in through the bottom of the screen.
+			Transition cardSlide = new Slide(Gravity.BOTTOM);
+			cardSlide.addTarget(rootView.findViewById(R.id.text_container));
+			enterTransition.addTransition(cardSlide);*/
+
+					// Don't fade the navigation/status bars.
+					/*Transition fade = new Fade();
+					fade.excludeTarget(android.R.id.navigationBarBackground, true);
+					fade.excludeTarget(android.R.id.statusBarBackground, true);
+					fade.excludeTarget(android.R.id.statusBarBackground, true);
+					enterTransition.addTransition(fade);*/
+
+					/*final ImageView fullScreenImage = (ImageView) rootView.findViewById(R.id.fullscreen_image_view);
+					fullScreenImage.setAlpha(0f);
+
+					enterTransition.addListener(new Transition.TransitionListener() {
+						@Override
+						public void onTransitionStart(Transition transition) {}
+
+						@Override
+						public void onTransitionEnd(Transition transition) {
+							fullScreenImage.animate().alpha(1f).setDuration(2000);
+						}
+
+						@Override
+						public void onTransitionCancel(Transition transition) {}
+
+						@Override
+						public void onTransitionPause(Transition transition) {}
+
+						@Override
+						public void onTransitionResume(Transition transition) {}
+
+					});
+
+					enterTransition.setDuration(400);*/
+					return enterTransition;
+				}
+
+				@TargetApi(Build.VERSION_CODES.KITKAT)
+				private Transition makeReturnTransition() {
+					View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
+					assert rootView != null;
+
+					TransitionSet returnTransition = new TransitionSet();
+
+			/*// Slide and fade the circular reveal container off the top of the screen.
+			TransitionSet slideFade = new TransitionSet();
+			slideFade.addTarget(rootView.findViewById(R.id.reveal_container));
+			slideFade.addTransition(new Slide(Gravity.TOP));
+			slideFade.addTransition(new Fade());
+			returnTransition.addTransition(slideFade);
+
+			// Slide the cards off the bottom of the screen.
+			Transition cardSlide = new Slide(Gravity.BOTTOM);
+			cardSlide.addTarget(rootView.findViewById(R.id.text_container));
+			returnTransition.addTransition(cardSlide);*/
+
+					returnTransition.setDuration(400);
+					return returnTransition;
+				}
+			};
+			setEnterSharedElementCallback(sharedElementCallback_);
+		}
+
 		handler_ = new Handler();
 		delayedHide(HIDE_DELAY_FIRST_RUN);							// Auto hide UI after some time
 		if (savedInstanceState == null) {
@@ -82,7 +209,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 		}
 		setTitle(dataSet_.get(openedItemNumber_).getTitle());
 		// Set up ViewPager and adapter
-		ImagePagerAdapter imagePagerAdapter_ =
+		imagePagerAdapter_ =
 				new ImagePagerAdapter(getSupportFragmentManager(), dataSet_.size(), dataSet_);
 		imagePager_ = (ViewPager) findViewById(R.id.images_view_pager);
 		imagePager_.setAdapter(imagePagerAdapter_);
@@ -99,6 +226,12 @@ public class ImagesViewingActivity extends FragmentActivity {
 			@Override
 			public void onPageScrollStateChanged(int state) {}
 		});
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			Log.d("---", "try to get enterTransition");
+			Log.d("---", "enterTransition: " + getWindow().getSharedElementEnterTransition());
+
+			getWindow().getSharedElementEnterTransition().setDuration(500);
+		}
 	}
 
 	/**
@@ -166,8 +299,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 	 * Schedules a call to {@link #toggleUi()}.
 	 */
 	private void delayedHide(int delayMillis) {
-		handler_.removeCallbacks(toggleRunnable_);
-		handler_.postDelayed(toggleRunnable_, delayMillis);
+		// TODO: uncomment below to enable actionbar hiding
+		/*handler_.removeCallbacks(toggleRunnable_);
+		handler_.postDelayed(toggleRunnable_, delayMillis);*/
 	}
 
 	/**
