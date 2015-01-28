@@ -75,14 +75,14 @@ public class RecyclerOnScrollListener extends RecyclerView.OnScrollListener {
 				overallScroll_ = 0;
 				break;
 			case AbsListView.OnScrollListener.SCROLL_STATE_IDLE:
-				ImageLoader.getInstance().resume();
+//				ImageLoader.getInstance().resume();
 				// Set adapter's extra space to one screen height
 				Point size = new Point();
 				((MainActivity) recyclerView.getContext()).getWindowManager().getDefaultDisplay().getSize(size);
 				changeAdapterExtraSpace(recyclerView, size.y);
 				break;
 			case AbsListView.OnScrollListener.SCROLL_STATE_FLING:
-				ImageLoader.getInstance().pause();
+//				ImageLoader.getInstance().pause();
 				// Set adapter's extra space to 0
 				changeAdapterExtraSpace(recyclerView, 0);
 				break;

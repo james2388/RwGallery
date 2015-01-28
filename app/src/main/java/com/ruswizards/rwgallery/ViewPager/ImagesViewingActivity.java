@@ -10,7 +10,6 @@ import android.annotation.TargetApi;
 import android.app.SharedElementCallback;
 import android.content.Intent;
 import android.graphics.Point;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,13 +20,10 @@ import android.transition.Fade;
 import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionSet;
-import android.util.Log;
 import android.view.Gravity;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.MenuItem;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiscCache;
@@ -37,7 +33,6 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
-import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.core.display.SimpleBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
@@ -59,6 +54,8 @@ public class ImagesViewingActivity extends FragmentActivity {
 	public static final String EXTRA_ITEM_NUMBER = "ItemNumber";
 	private static final long TOOLBAR_HIDE_ANIM_DURATION = 200;
 	private static final int HIDE_DELAY_FIRST_RUN = 1000;
+	private static final String STATE_CURRENT_POSITION = "CurrentPositionState";
+	private static final String STATE_OLD_POSITION = "OldPositionState";
 
 	private boolean isUiHidden_;
 	private Handler handler_;
@@ -66,6 +63,9 @@ public class ImagesViewingActivity extends FragmentActivity {
 	private int openedItemNumber_;
 	private ViewPager imagePager_;
 	private ImagePagerAdapter imagePagerAdapter_;
+	private int currentPosition_;
+	private int oldPosition_;
+	private boolean isReturning_;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -81,120 +81,7 @@ public class ImagesViewingActivity extends FragmentActivity {
 		setContentView(R.layout.activity_images_viewing);
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 			postponeEnterTransition();
-			SharedElementCallback sharedElementCallback_ = new SharedElementCallback() {
-				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-				@Override
-				public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
-					View sharedView = imagePagerAdapter_.getCurrentImageFragment().getSharedElement();
-					if (sharedView == null){
-						names.clear();
-						sharedElements.clear();
-					} else {
-						//TODO: here must be check for old and new positions comparison
-						names.clear();
-						sharedElements.clear();
-						names.add(sharedView.getTransitionName());
-						sharedElements.put(sharedView.getTransitionName(), sharedView);
-					}
-				}
-
-				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-				@Override
-				public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-					//TODO: add isReturning
-					getWindow().setEnterTransition(makeEnterTransition(getSharedElement(sharedElements)));
-				}
-
-				@TargetApi(Build.VERSION_CODES.LOLLIPOP)
-				@Override
-				public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
-					//TODO: add isReturning
-					getWindow().setReturnTransition(makeReturnTransition());
-				}
-
-				private View getSharedElement(List<View> sharedElements) {
-					for (View view : sharedElements){
-						if (view instanceof ImageView){					//TODO: possible PreviewImageView
-							return view;
-						}
-					}
-					return null;
-				}
-
-				@TargetApi(Build.VERSION_CODES.KITKAT)
-				private Transition makeEnterTransition(View sharedElement) {
-					View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
-
-					TransitionSet enterTransition = new TransitionSet();
-					// TODO: change transition
-			/*// Play a circular reveal animation starting beneath the shared element.
-			Transition circularReveal = new CircularReveal(sharedElement);
-			circularReveal.addTarget(rootView.findViewById(R.id.reveal_container));
-			enterTransition.addTransition(circularReveal);
-
-			// Slide the cards in through the bottom of the screen.
-			Transition cardSlide = new Slide(Gravity.BOTTOM);
-			cardSlide.addTarget(rootView.findViewById(R.id.text_container));
-			enterTransition.addTransition(cardSlide);*/
-
-					// Don't fade the navigation/status bars.
-					/*Transition fade = new Fade();
-					fade.excludeTarget(android.R.id.navigationBarBackground, true);
-					fade.excludeTarget(android.R.id.statusBarBackground, true);
-					fade.excludeTarget(android.R.id.statusBarBackground, true);
-					enterTransition.addTransition(fade);*/
-
-					/*final ImageView fullScreenImage = (ImageView) rootView.findViewById(R.id.fullscreen_image_view);
-					fullScreenImage.setAlpha(0f);
-
-					enterTransition.addListener(new Transition.TransitionListener() {
-						@Override
-						public void onTransitionStart(Transition transition) {}
-
-						@Override
-						public void onTransitionEnd(Transition transition) {
-							fullScreenImage.animate().alpha(1f).setDuration(2000);
-						}
-
-						@Override
-						public void onTransitionCancel(Transition transition) {}
-
-						@Override
-						public void onTransitionPause(Transition transition) {}
-
-						@Override
-						public void onTransitionResume(Transition transition) {}
-
-					});
-
-					enterTransition.setDuration(400);*/
-					return enterTransition;
-				}
-
-				@TargetApi(Build.VERSION_CODES.KITKAT)
-				private Transition makeReturnTransition() {
-					View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
-					assert rootView != null;
-
-					TransitionSet returnTransition = new TransitionSet();
-
-			/*// Slide and fade the circular reveal container off the top of the screen.
-			TransitionSet slideFade = new TransitionSet();
-			slideFade.addTarget(rootView.findViewById(R.id.reveal_container));
-			slideFade.addTransition(new Slide(Gravity.TOP));
-			slideFade.addTransition(new Fade());
-			returnTransition.addTransition(slideFade);
-
-			// Slide the cards off the bottom of the screen.
-			Transition cardSlide = new Slide(Gravity.BOTTOM);
-			cardSlide.addTarget(rootView.findViewById(R.id.text_container));
-			returnTransition.addTransition(cardSlide);*/
-
-					returnTransition.setDuration(400);
-					return returnTransition;
-				}
-			};
-			setEnterSharedElementCallback(sharedElementCallback_);
+			setEnterSharedElementCallback(initSharedElementCallback());
 		}
 
 		handler_ = new Handler();
@@ -206,6 +93,11 @@ public class ImagesViewingActivity extends FragmentActivity {
 			String sourceDirectory = getIntent().getStringExtra(EXTRA_SOURCE_DIRECTORY);
 			// Fill data in a list
 			RecyclerViewFragment.fillDataSet(sourceDirectory, dataSet_, false);
+			currentPosition_ = openedItemNumber_;
+			oldPosition_ = currentPosition_;
+		} else {
+			currentPosition_ = savedInstanceState.getInt(STATE_CURRENT_POSITION);
+			oldPosition_ = savedInstanceState.getInt(STATE_OLD_POSITION);
 		}
 		setTitle(dataSet_.get(openedItemNumber_).getTitle());
 		// Set up ViewPager and adapter
@@ -222,16 +114,132 @@ public class ImagesViewingActivity extends FragmentActivity {
 			public void onPageSelected(int position) {
 				// Change title after image is opened
 				setTitle(dataSet_.get(position).getTitle());
+				currentPosition_ = position;
 			}
 			@Override
 			public void onPageScrollStateChanged(int state) {}
 		});
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-			Log.d("---", "try to get enterTransition");
-			Log.d("---", "enterTransition: " + getWindow().getSharedElementEnterTransition());
-
 			getWindow().getSharedElementEnterTransition().setDuration(500);
 		}
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private SharedElementCallback initSharedElementCallback() {
+		SharedElementCallback sharedElementCallback = new SharedElementCallback() {
+			@Override
+			public void onMapSharedElements(List<String> names, Map<String, View> sharedElements) {
+				if (isReturning_){
+					View sharedView = imagePagerAdapter_.getCurrentImageFragment().getSharedElement();
+					if (sharedView == null){
+						names.clear();
+						sharedElements.clear();
+					} else if (currentPosition_ != oldPosition_){
+						names.clear();
+						sharedElements.clear();
+						names.add(sharedView.getTransitionName());
+						sharedElements.put(sharedView.getTransitionName(), sharedView);
+					}
+				}
+			}
+
+			@Override
+			public void onSharedElementStart(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+				if (!isReturning_) {
+//					getWindow().setEnterTransition(makeEnterTransition(getSharedElement(sharedElements)));
+//					getWindow().setEnterTransition(makeEnterTransition(getSharedElement(sharedElements)));
+				}
+			}
+
+			@Override
+			public void onSharedElementEnd(List<String> sharedElementNames, List<View> sharedElements, List<View> sharedElementSnapshots) {
+				if (isReturning_) {
+					getWindow().setReturnTransition(makeReturnTransition());
+				}
+			}
+
+			private View getSharedElement(List<View> sharedElements) {
+				for (View view : sharedElements){
+					if (view instanceof ImageView){					//TODO: possible PreviewImageView
+						return view;
+					}
+				}
+				return null;
+			}
+		};
+		return sharedElementCallback;
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private Transition makeEnterTransition(View sharedElement) {
+		View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
+		assert rootView != null;
+
+		TransitionSet enterTransition = new TransitionSet();
+			/*// Play a circular reveal animation starting beneath the shared element.
+			Transition circularReveal = new CircularReveal(sharedElement);
+			circularReveal.addTarget(rootView.findViewById(R.id.reveal_container));
+			enterTransition.addTransition(circularReveal);*/
+
+			/*// Slide the cards in through the bottom of the screen.
+			Transition cardSlide = new Slide(Gravity.BOTTOM);
+			cardSlide.addTarget(rootView.findViewById(R.id.text_container));
+			enterTransition.addTransition(cardSlide);*/
+
+		// Don't fade the navigation/status bars.
+			Transition fade = new Fade();
+			fade.excludeTarget(android.R.id.navigationBarBackground, true);
+			fade.excludeTarget(android.R.id.statusBarBackground, true);
+			enterTransition.addTransition(fade);
+
+			/*final ImageView fullScreenImage = (ImageView) rootView.findViewById(R.id.fullscreen_image_view);
+			fullScreenImage.setAlpha(0f);*/
+
+			/*enterTransition.addListener(new Transition.TransitionListener() {
+				@Override
+				public void onTransitionStart(Transition transition) {}
+
+				@Override
+				public void onTransitionEnd(Transition transition) {
+					fullScreenImage.animate().alpha(1f).setDuration(2000);
+				}
+
+				@Override
+				public void onTransitionCancel(Transition transition) {}
+
+				@Override
+				public void onTransitionPause(Transition transition) {}
+
+				@Override
+				public void onTransitionResume(Transition transition) {}
+
+			});*/
+
+			enterTransition.setDuration(400);
+		return enterTransition;
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	private Transition makeReturnTransition() {
+		View rootView = imagePagerAdapter_.getCurrentImageFragment().getView();
+		assert rootView != null;
+
+		TransitionSet returnTransition = new TransitionSet();
+
+		/*// Slide and fade the circular reveal container off the top of the screen.
+		TransitionSet slideFade = new TransitionSet();
+		slideFade.addTarget(rootView.findViewById(R.id.reveal_container));
+		slideFade.addTransition(new Slide(Gravity.TOP));
+		slideFade.addTransition(new Fade());
+		returnTransition.addTransition(slideFade);
+
+		// Slide the cards off the bottom of the screen.
+		Transition cardSlide = new Slide(Gravity.BOTTOM);
+		cardSlide.addTarget(rootView.findViewById(R.id.text_container));
+		returnTransition.addTransition(cardSlide);*/
+
+		returnTransition.setDuration(400);
+		return returnTransition;
 	}
 
 	/**
@@ -369,5 +377,24 @@ public class ImagesViewingActivity extends FragmentActivity {
 	protected void onResume() {
 		super.onResume();
 		initializeImageLoader();
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putInt(STATE_CURRENT_POSITION, currentPosition_);
+		outState.putInt(STATE_OLD_POSITION, oldPosition_);
+	}
+
+	@TargetApi(Build.VERSION_CODES.LOLLIPOP)
+	@Override
+	public void finishAfterTransition() {
+		isReturning_ = true;
+		getWindow().setReturnTransition(makeReturnTransition());
+		Intent dataIntent = new Intent();
+		dataIntent.putExtra(MainActivity.EXTRA_OLD_POSITION, getIntent().getExtras().getInt(EXTRA_ITEM_NUMBER));
+		dataIntent.putExtra(MainActivity.EXTRA_CURRENT_POSITION, currentPosition_);
+		setResult(RESULT_OK, dataIntent);
+		super.finishAfterTransition();
 	}
 }

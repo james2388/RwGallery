@@ -369,6 +369,14 @@ public class RecyclerViewFragment extends Fragment implements View.OnClickListen
 		}*/
 	}
 
+	public List<GalleryItem> getDataSet() {
+		return dataSet_;
+	}
+
+	public RecyclerView getRecyclerView() {
+		return recyclerView_;
+	}
+
 	public enum LayoutManagerType {
 		GRID_LAYOUT, LINEAR_LAYOUT, STAGGERED_GRID_LAYOUT
 	}

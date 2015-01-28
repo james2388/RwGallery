@@ -29,6 +29,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 import com.nostra13.universalimageloader.core.display.FadeInBitmapDisplayer;
 import com.nostra13.universalimageloader.utils.StorageUtils;
 import com.ruswizards.rwgallery.GalleryItem;
+import com.ruswizards.rwgallery.MainActivity;
 import com.ruswizards.rwgallery.R;
 import com.ruswizards.rwgallery.ViewPager.ImagesViewingActivity;
 
@@ -71,6 +72,7 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						if (imageLoader_.isInited()) {
 							imageLoader_.destroy();
 						}
+						((MainActivity)recyclerViewFragment_.getActivity()).setReentering(false);
 						Intent openImageIntent = new Intent(recyclerViewFragment_.getActivity(), ImagesViewingActivity.class);
 						int directories = 0;
 						int j = 0;
@@ -89,11 +91,12 @@ public class CustomRecyclerViewAdapter extends RecyclerView.Adapter<CustomRecycl
 						}
 						openImageIntent.putExtra(ImagesViewingActivity.EXTRA_SOURCE_DIRECTORY, sourceDirectory);
 						if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-							/*ActivityOptions activityOptions = ActivityOptionsCompat.makeSceneTransitionAnimation(
+							ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(
 									recyclerViewFragment_.getActivity(),
-									new Pair<View, String>(newView.findViewById(R.id.preview_image_view))
-							);*/
-							recyclerViewFragment_.getActivity().startActivity(openImageIntent, ActivityOptions.makeSceneTransitionAnimation(recyclerViewFragment_.getActivity(), previewImageView, previewImageView.getTransitionName()).toBundle());
+									previewImageView,
+									previewImageView.getTransitionName()
+							);
+							recyclerViewFragment_.getActivity().startActivity(openImageIntent, activityOptions.toBundle());
 						} else {
 							recyclerViewFragment_.getActivity().startActivity(openImageIntent);
 						}

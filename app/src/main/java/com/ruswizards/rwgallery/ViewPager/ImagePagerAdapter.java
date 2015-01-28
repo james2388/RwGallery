@@ -6,6 +6,7 @@
  */
 package com.ruswizards.rwgallery.ViewPager;
 
+import android.annotation.TargetApi;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -95,7 +96,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
-			ImageLoader.getInstance().displayImage("file://" + source_, fullscreenImageView_);
+//			ImageLoader.getInstance().displayImage("file://" + source_, fullscreenImageView_);
 		}
 
 		@Nullable
@@ -107,6 +108,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 				fullscreenImageView_.setTransitionName(source_);
 				view.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+					@TargetApi(Build.VERSION_CODES.LOLLIPOP)
 					@Override
 					public boolean onPreDraw() {
 						view.getViewTreeObserver().removeOnPreDrawListener(this);
