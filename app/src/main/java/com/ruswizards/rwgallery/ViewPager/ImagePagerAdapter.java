@@ -97,6 +97,7 @@ public class ImagePagerAdapter extends FragmentStatePagerAdapter {
 		public void onActivityCreated(Bundle savedInstanceState) {
 			super.onActivityCreated(savedInstanceState);
 //			ImageLoader.getInstance().displayImage("file://" + source_, fullscreenImageView_);
+			fullscreenImageView_.setImageBitmap(ImageLoader.getInstance().loadImageSync("file://" + source_));
 		}
 
 		@Nullable
